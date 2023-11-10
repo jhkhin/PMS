@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
+import com.oracle.s202350101.model.HijPrjStep;
 import com.oracle.s202350101.model.HijRequestDto;
 import com.oracle.s202350101.model.HijRequestPrjDto;
 import com.oracle.s202350101.model.PrjInfo;
@@ -301,6 +302,19 @@ public class HijDaoImpl implements HijDao {
 		return stepInsert;
 	}
 	
+//------------------------------------------------------------------------------------------------------------------	
+	// 단계 선택
+	@Override
+	public int prjOrder(List<HijPrjStep> hijPrjStepList) {
+		int result =0;
+		System.out.println("HijDaoImpl prjOrder START");
+		try {
+			result = session.update("ijPrjOrder", hijPrjStepList);
+		} catch (Exception e) {
+			System.out.println("HijDaoImpl prjOrder Exception e : " + e.getMessage());
+		}
+		return result;
+	}
 //--------------------------------------------------------------------------------------	
 	// 프로젝트 단계 수정 조회
 	@Override

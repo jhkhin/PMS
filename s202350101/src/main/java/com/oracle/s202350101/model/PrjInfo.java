@@ -33,6 +33,7 @@ public class PrjInfo {
 	private String project_status_name;  // 프로젝트 진행 상태
 	private String del_status_name;		 // 프로젝트 삭제상태
 	
+	
 	// 조회용
 	private String search;   	private String keyword;
 	private String pageNum;		private int total;

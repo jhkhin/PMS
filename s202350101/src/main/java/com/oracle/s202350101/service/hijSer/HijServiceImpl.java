@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import com.oracle.s202350101.dao.hijDao.HijDao;
+import com.oracle.s202350101.model.HijPrjStep;
 import com.oracle.s202350101.model.HijRequestDto;
 import com.oracle.s202350101.model.HijRequestPrjDto;
 import com.oracle.s202350101.model.PrjInfo;
@@ -353,7 +354,19 @@ public class HijServiceImpl implements HijService {
 		stepInsert = hd.insertStep(prjStep);
 		//-----------------------------------------------------
 		return stepInsert;
-	}	
+	}
+//------------------------------------------------------------------------------------------------------------------	
+	// 단계 선택 **************************************
+	@Override
+	public int prjOrder( List<HijPrjStep> hijPrjStepList) {
+		int resultCount = 0;
+		System.out.println("HijServiceImple prjOrder START");
+		//-------------------------------------------------
+		resultCount = hd.prjOrder(hijPrjStepList);
+		//-------------------------------------------------
+		return resultCount;
+	}
+
 //------------------------------------------------------------------------------------------------------------------		
 	// 프로젝트 단계 수정 조회
 	@Override

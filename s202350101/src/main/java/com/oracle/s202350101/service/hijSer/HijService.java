@@ -2,6 +2,7 @@ package com.oracle.s202350101.service.hijSer;
 
 import java.util.List;
 
+import com.oracle.s202350101.model.HijPrjStep;
 import com.oracle.s202350101.model.HijRequestDto;
 import com.oracle.s202350101.model.PrjInfo;
 import com.oracle.s202350101.model.PrjMemList;
@@ -32,6 +33,7 @@ public interface HijService {
 	int prjStatus(PrjInfo prjInfo);									// 프로젝트 상태조회
 	int reqEdit(PrjInfo prjInfo);									// 프로젝트 정보 수정 수행
 	int insertStep(PrjStep prjStep);								// 프로젝트 단계 추가 수행
+	int prjOrder( List<HijPrjStep> hijPrjStepList);							// 단계 선택
 	PrjStep detailStep(int project_id, int project_step_seq);		// 프로젝트 단계 수정 조회
 	int updateStep(PrjStep prjStep);								// 프로젝트 단계 수정 수행
 	int deleteStep(int project_id, int project_step_seq);     		// 프로젝트 단계 삭제

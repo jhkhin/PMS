@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.oracle.s202350101.model.HijPrjStep;
 import com.oracle.s202350101.model.HijRequestDto;
 import com.oracle.s202350101.model.Paging;
 import com.oracle.s202350101.model.PrjInfo;
@@ -143,6 +144,7 @@ public class HijController {
 			System.out.println("HijController titleList.size() : " + titleList.size());
 			System.out.println("listStep 프로젝트 아이디 : " + prjInfo.getProject_id());
 			model.addAttribute("listMember", listMember);
+			model.addAttribute("titleListCount",titleList.size());
 			model.addAttribute("prjInfo", prjInfo);
 			model.addAttribute("titleList", titleList);
 			model.addAttribute("ProjectNotFound", "FALSE");
@@ -229,7 +231,19 @@ public class HijController {
 		if(insertResult > 0) return "redirect:prj_mgr_step_list";
 		return "forword:prj_mgr_step_insert";
 	}	
-//--------------------------------------------------------------------------------------				
+//--------------------------------------------------------------------------------------
+	// 단계 선택 
+	@PostMapping(value = "/prj_order_update")
+	@ResponseBody
+	public ResponseEntity<?> prjOrderUpdate(@RequestBody List<HijPrjStep> hijPrjStepList) {
+		System.out.println("HijController prjOrderUpdate Start");
+		//-------------------------------------------------
+		int result = hs.prjOrder(hijPrjStepList);
+		//-------------------------------------------------
+		System.out.println("result : " + result);
+		return ResponseEntity.ok(result);
+	}
+//--------------------------------------------------------------------------------------
 	// 프로젝트 단계 수정 조회
 	@GetMapping(value = "prj_mgr_step_edit")
 	public String stepEdit(int project_id, int project_step_seq, Model model) {

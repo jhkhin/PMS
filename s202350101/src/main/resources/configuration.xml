@@ -34,6 +34,7 @@
     <typeAlias alias="UserInfo" type="com.oracle.s202350101.model.UserInfo" />
     <typeAlias alias="HijRequestDto" type="com.oracle.s202350101.model.HijRequestDto" />
     <typeAlias alias="HijRequestPrjDto" type="com.oracle.s202350101.model.HijRequestPrjDto" />
+    <typeAlias alias="HijPrjStep" type="com.oracle.s202350101.model.HijPrjStep" />
 
 </typeAliases>
 		
