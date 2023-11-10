@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.oBootMybatis01.DeptMapper">
+
+
+	<resultMap type="Dept" id="DeptResult">
+		<result property="deptno" column="deptno" />
+		<result property="dname" column="dname" />
+		<result property="loc" column="loc" />
+	</resultMap>
+	
+	<!-- 6-2. 부서코드 (코드, 부서명) -->
+	<select id="tkSelectDept" resultType="Dept">
+		select * from dept
+	</select>
+
+	<!-- 14. Procedure 통한 Dept 입력후 VO 전달 -->
+	<!-- CALLABLE을 이용하여 입력(IN)받으면 OUT을 통해 DeptVO로 내용들이 담아져서 나감 -->
+	<select id="procDeptInsert" parameterType="DeptVO" statementType="CALLABLE">
+	{
+		call Dept_Insert3(
+				#{deptno,	mode=IN,	jdbcType=INTEGER},
+				#{dname,	mode=IN,	jdbcType=VARCHAR},
+				#{loc,		mode=IN,	jdbcType=VARCHAR},
+				#{odeptno,	mode=OUT,	jdbcType=INTEGER},
+				#{odname,	mode=OUT,	jdbcType=VARCHAR},
+				#{oloc,		mode=OUT,	jdbcType=VARCHAR}
+		)
+	}
+	</select>
+	
+	<!--  15. 부서조회(Cursor) -->
+	<!-- parameterType="java.util.Map" 은 key값은 String으로 가져가야함  -->
+	<select id="procDeptList" parameterType="java.util.Map" statementType="CALLABLE">
+		{
+			call Dept_Cursor3(
+					#{sDeptno,	mode=IN,	jdbcType=INTEGER},
+					#{eDeptno,	mode=IN,	jdbcType=INTEGER},
+					#{dept,		mode=OUT,	jdbcType=CURSOR, 
+					  						javaType=java.sql.ResultSet, 
+					  						resultMap=DeptResult}
+			)		
+		}
+	</select>
+	
+</mapper>
