@@ -55,7 +55,8 @@
 		}else{
 		}
 	}
-
+	
+	// 프로젝트 정보 수정
 	function list_up(){
 		$.ajax({
 			url			: '/prj_mgr_req_edit',
@@ -157,6 +158,7 @@
 		
      }
 
+	// 단계선택 비교
 	 function checkDuplication(type, objName){
 		var temp = [];
 		var obj = $('select['+type+'='+objName+']');

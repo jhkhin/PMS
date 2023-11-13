@@ -280,7 +280,10 @@ public class HijController {
 //--------------------------------------------------------------------------------------		
 // 포트폴리오 생성
 	@GetMapping(value = "prj_mgr_step_read")
-	public String stepRead(int project_id, Model model) {
+	public String stepRead(int project_id, Model model, HttpServletRequest request) {
+
+		UserInfo userInfoDTO = (UserInfo) request.getSession().getAttribute("userInfo");
+		
 		System.out.println("HijController prj_mgr_step_read Start");
 		//-------------------------------------------------
 		List<PrjMemList> listMember = hs.listMember(project_id);
@@ -293,6 +296,7 @@ public class HijController {
 		model.addAttribute("listMember", listMember);
 		model.addAttribute("titleList", titleList);
 		model.addAttribute("prjInfo", prjInfo);
+		model.addAttribute("userInfoDTO", userInfoDTO);
 
 		return "/project/manager/prj_mgr_step_read";
 	}
