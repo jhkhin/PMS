@@ -66,34 +66,42 @@
 			}
 		});
 	}
+
 	
 	// 프로젝트 시작 버튼
 	function prj_start(){
-		var params = {};
-		params.project_id = ${prjInfo.project_id};
-		params.project_status = 1;
-		$.ajax({
-			url			: "/prj_status_bnt",
-			type      	: "POST",
-		    contentType : "application/json; charset=utf-8",
-		    data       	: JSON.stringify(params),
-		    dataType    : "text",
-		    success		: function(data) {
-				if(data == "success") {
-					$('#idPrjStauts').html("진행중");
-					$("#startBtn").hide();
-					$("#endBtn").show();
-				} else if(data == "fail"){
-					alert("프로젝트 진행상태가 변경되지 않았습니다. 관리자에 문의하세요");
-				}
-			},
-		    error: function(xhr, status, error){
-		    	alert("에러");
-		    	console.log("상태값 : " + xhr.status + "\tHttp 에러메시지 : " + xhr.responseText); 
-		    }
-		});	
+		
+		if (${prjInfo.project_approve} === 2){
+			var params = {};
+			params.project_id = ${prjInfo.project_id};
+			params.project_status = 1;
+			$.ajax({
+				url			: "/prj_status_bnt",
+				type      	: "POST",
+			    contentType : "application/json; charset=utf-8",
+			    data       	: JSON.stringify(params),
+			    dataType    : "text",
+			    success		: function(data) {
+					if(data == "success") {
+						$('#idPrjStauts').html("진행중");
+						$("#startBtn").hide();
+						$("#endBtn").show();
+					} else if(data == "fail"){
+						alert("프로젝트 진행상태가 변경되지 않았습니다. 관리자에 문의하세요");
+					}
+				},
+			    error: function(xhr, status, error){
+			    	alert("에러");
+			    	console.log("상태값 : " + xhr.status + "\tHttp 에러메시지 : " + xhr.responseText); 
+			    }
+			});	
+		}else if(${prjInfo.project_approve} === 1){
+			alert("프로젝트 승인 전 입니다. 관리자에게 문의하세요");
+			location.href="/prj_mgr_step_list";
+		}
 	}
-
+		
+	
 	// 프로젝트 종료 버튼
 	function prj_end(){
 		var params = {};
@@ -120,7 +128,6 @@
 		    }
 		});			
 	}
-		
 	// 프로젝트 단계 설정
     function prj_order() {
     	
@@ -201,18 +208,21 @@
 		<main id="center" class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
 			<!------------------------------ //개발자 소스 입력 START ------------------------------->
 
-<%--  	<c:if test="${userInfoDTO.user_auth != 'manager' }">
+  	<c:if test="${userInfoDTO.user_auth != 'manager' }">
 			<script type="text/javascript">
 				alert("팀장 권한이 없습니다. 관리자에게 문의하세요");
 				location.href = "/main";
 			</script>
 	</c:if>
+	
 	<c:if test="${ProjectNotFound == 'TRUE'}">
 			<script type="text/javascript">
 				alert("프로젝트가 존재하지 않습니다");
 				location.href = "/main";
 			</script>
-	</c:if>  --%> 
+	</c:if>
+	
+	
 		<div id="divPrjInfo">
 			<h2>프로젝트 정보</h2>
 			<hr>
@@ -264,12 +274,13 @@
 				</tr>					
 			</table>
 			
+
 				<div align="right">
-				 	<button type="button" id="startBtn" style="display:none;" class="btn btn-secondary" onclick="prj_start()">프로젝트 시작</button>
-				 	<button type="button" id="endBtn" style="display:none;" class="btn btn-secondary" onclick="prj_end()">프로젝트 종료</button>
-					<button type="button" class="btn btn-secondary" onclick="list_up()">수정</button>
+						 	<button type="button" id="startBtn" style="display:none;" class="btn btn-secondary" onclick="prj_start()">프로젝트 시작</button>
+						 	<button type="button" id="endBtn" style="display:none;" class="btn btn-secondary" onclick="prj_end()">프로젝트 종료</button>
+							<button type="button" class="btn btn-secondary" onclick="list_up()">수정</button>
+						</div>
 				</div>
-		</div>
 			<br>
 			<hr>
 			
@@ -306,7 +317,6 @@
 					 <button type="button" class="btn btn-secondary" onclick="location.href='prj_mgr_step_read?project_id=${prjInfo.project_id}'">포트폴리오 생성</button><p>
 				</div>
 		</c:if>		
-
 
 
 
