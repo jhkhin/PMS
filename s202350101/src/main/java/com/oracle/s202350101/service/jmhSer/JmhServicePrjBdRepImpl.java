@@ -22,11 +22,27 @@ public class JmhServicePrjBdRepImpl implements JmhServicePrjBdRep {
 
 	//총건수
 	@Override
-	public int totalCount() {
-		System.out.println("JmhServiceImpl totalCount START...");		
-		//---------------------------------
-		int totalCnt = jmhRepDao.totalCount();
-		//---------------------------------		
+	public int totalCount(PrjBdRep prjBdRep) {
+		System.out.println("JmhServiceImpl totalCount START...");
+
+		int totalCnt = 0;
+		
+		if(prjBdRep.getKeyword() != null) {
+			System.out.println("★검색 Search---->"+prjBdRep.getSearch());
+			if(!prjBdRep.getKeyword().equals("")) {
+				System.out.println("★검색 SearchKeyword---->"+prjBdRep.getKeyword());
+				//검색 건수 가져오기
+				//------------------------------------------
+				totalCnt = jmhRepDao.searchCount(prjBdRep);
+				//------------------------------------------
+				System.out.println("JmhServiceImpl totalCount totalCnt->" + totalCnt);
+				System.out.println("JmhServiceImpl totalCount END...");
+				return totalCnt;
+			}
+		}
+		//-----------------------------------------
+		totalCnt = jmhRepDao.totalCount(prjBdRep);
+		//-----------------------------------------
 		System.out.println("JmhServiceImpl totalCount totalCnt->" + totalCnt);
 		System.out.println("JmhServiceImpl totalCount END...");
 		return totalCnt;
@@ -36,7 +52,18 @@ public class JmhServicePrjBdRepImpl implements JmhServicePrjBdRep {
 	@Override
 	public List<PrjBdRep> boardList(PrjBdRep prjBdRep) {
 		System.out.println("JmhServiceImpl boardList START...");
+		
 		List<PrjBdRep> prjBdRepList = null;
+		
+		if(prjBdRep.getKeyword() != null) {
+			if(!prjBdRep.getKeyword().equals("")) {
+				//-----------------------------------------------
+				prjBdRepList = jmhRepDao.searchList(prjBdRep);
+				//-----------------------------------------------
+				System.out.println("JmhServiceImpl boardList > searchList END...");
+				return prjBdRepList;
+			}
+		}		
 		//------------------------------------------
 		prjBdRepList = jmhRepDao.boardList(prjBdRep);
 		//------------------------------------------		

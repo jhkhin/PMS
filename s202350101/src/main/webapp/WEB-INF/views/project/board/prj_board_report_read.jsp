@@ -165,7 +165,7 @@ $(function(){
 								<td>분류</td>
 								<td>${board.bd_category_name}</td>
 							</tr>
-							<c:if test="${board.attach_path != null}">
+							<c:if test="${board.attach_path ne null}">
 								<tr>
 									<td>파일첨부</td>
 									<td><a href="javascript:popup('/upload/${board.attach_path}',800,600)">${board.attach_name}</a></td>

@@ -220,7 +220,7 @@ $(function(){
 								<td>작성일</td>
 								<td><fmt:formatDate value="${board.create_date}" type="date" pattern="yyyy-MM-dd hh:mm:ss"/></td>
 							</tr>
-							<c:if test="${board.parent_doc_no != ''}">
+							<c:if test="${board.parent_doc_no ne ''}">
 							<tr>
 								<td>원글제목</td>											 
 								<td><a href="javascript:callAction('read','prj_board_data_read?doc_no=${board.parent_doc_no}&project_id=${board.project_id}')">${board.parent_doc_subject}</a></td>
@@ -230,7 +230,7 @@ $(function(){
 								<td>제목</td>
 								<td>${board.subject}</td>
 							</tr>
-							<c:if test="${board.notify_flag == 'Y'}">
+							<c:if test="${board.notify_flag eq 'Y'}">
 								<tr>
 									<td>공지여부</td>
 									<td>공지</td>
@@ -240,7 +240,7 @@ $(function(){
 								<td>분류</td>
 								<td>${board.bd_category_name}</td>
 							</tr>
-							<c:if test="${board.attach_path != null}">
+							<c:if test="${board.attach_path ne null}">
 								<tr>
 									<td>파일첨부</td>
 									<td><a href="javascript:popup('/upload/${board.attach_path}',800,600)">${board.attach_name}</a></td>

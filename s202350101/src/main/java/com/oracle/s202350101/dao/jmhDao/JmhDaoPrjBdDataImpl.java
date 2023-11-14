@@ -19,16 +19,16 @@ public class JmhDaoPrjBdDataImpl implements JmhDaoPrjBdData {
 	//Mybatis DB 연동
 	private final SqlSession session;
 
-	
+	//총건수
 	@Override
-	public int totalCount() {
+	public int totalCount(PrjBdData prjBdData) {
 		
 		System.out.println("JmhDaoImpl totalCount START...");
 		int totalCnt = 0;				
 		try {
-			//---------------------------------------------------------
-			totalCnt = session.selectOne("jmhPrjBdDataListTotalCount");
-			//---------------------------------------------------------
+			//--------------------------------------------------------------------
+			totalCnt = session.selectOne("jmhPrjBdDataListTotalCount", prjBdData);
+			//--------------------------------------------------------------------
 			System.out.println("JmhDaoImpl totalCount totalCnt->"+totalCnt);
 		} catch (Exception e) {
 			System.out.println("JmhDaoImpl totalCount Exception->"+e.getMessage());
@@ -36,7 +36,44 @@ public class JmhDaoPrjBdDataImpl implements JmhDaoPrjBdData {
 		System.out.println("JmhDaoImpl totalCount END...");
 		return totalCnt;
 	}
+
+	//알림 문서 건수
+	@Override
+	public int alarmCount(PrjBdData prjBdData) {
+		
+		System.out.println("JmhDaoImpl alarmCount START...");
+		int alarmCnt = 0;				
+		try {
+			//--------------------------------------------------------------------
+			alarmCnt = session.selectOne("jmhPrjBdDataListAlarmCount", prjBdData);
+			//--------------------------------------------------------------------
+			System.out.println("JmhDaoImpl alarmCount alarmCnt->"+alarmCnt);
+		} catch (Exception e) {
+			System.out.println("JmhDaoImpl alarmCount Exception->"+e.getMessage());
+		}
+		System.out.println("JmhDaoImpl alarmCount END...");
+		return alarmCnt;
+	}
+
+	//검색 문서 건수
+	@Override
+	public int searchCount(PrjBdData prjBdData) {
+		
+		System.out.println("JmhDaoImpl searchCount START...");
+		int searchCnt = 0;				
+		try {
+			//----------------------------------------------------------------------
+			searchCnt = session.selectOne("jmhPrjBdDataListSearchCount", prjBdData);
+			//----------------------------------------------------------------------
+			System.out.println("JmhDaoImpl searchCount searchCnt->"+searchCnt);
+		} catch (Exception e) {
+			System.out.println("JmhDaoImpl searchCount Exception->"+e.getMessage());
+		}
+		System.out.println("JmhDaoImpl searchCount END...");
+		return searchCnt;
+	}
 	
+	//목록
 	@Override
 	public List<PrjBdData> boardList(PrjBdData prjBdData) {
 		
@@ -58,6 +95,51 @@ public class JmhDaoPrjBdDataImpl implements JmhDaoPrjBdData {
 		return prjBdDataList;
 	}
 
+	//알림 목록
+	@Override
+	public List<PrjBdData> alarmList(PrjBdData prjBdData) {
+		
+		System.out.println("JmhDaoImpl alarmList START...");
+		List<PrjBdData> prjBdDataList = null;		
+		try {
+			//---------------------------------------------------------------------
+			prjBdDataList = session.selectList("jmhPrjBdDataAlarmList", prjBdData);
+			//---------------------------------------------------------------------
+			if(prjBdDataList != null) {
+				System.out.println("JmhDaoImpl alarmList prjBdDataList.get(0).getSubject()->"+((PrjBdData) prjBdDataList.get(0)).getSubject());
+			}else {
+				System.out.println("SQL오류");
+			}
+		} catch (Exception e) {
+			System.out.println("JmhDaoImpl alarmList Exception->"+e.getMessage());
+		}
+		System.out.println("JmhDaoImpl alarmList END...");
+		return prjBdDataList;
+	}
+	
+	//검색
+	@Override
+	public List<PrjBdData> searchList(PrjBdData prjBdData) {
+		
+		System.out.println("JmhDaoImpl searchList START...");
+		List<PrjBdData> prjBdDataList = null;		
+		try {
+			//----------------------------------------------------------------------
+			prjBdDataList = session.selectList("jmhPrjBdDataSearchList", prjBdData);
+			//----------------------------------------------------------------------
+			if(prjBdDataList != null) {
+				System.out.println("JmhDaoImpl searchList prjBdDataList.get(0).getSubject()->"+((PrjBdData) prjBdDataList.get(0)).getSubject());
+			}else {
+				System.out.println("SQL오류");
+			}
+		} catch (Exception e) {
+			System.out.println("JmhDaoImpl searchList Exception->"+e.getMessage());
+		}
+		System.out.println("JmhDaoImpl searchList END...");
+		return prjBdDataList;
+	}
+
+	//분류
 	@Override
 	public List<Code> codeList(Code code) {
 		
@@ -82,6 +164,7 @@ public class JmhDaoPrjBdDataImpl implements JmhDaoPrjBdData {
 		return reCodeList;
 	}
 
+	//등록
 	@Override
 	public int insertBoard(PrjBdData prjBdData) {
 		
@@ -104,6 +187,7 @@ public class JmhDaoPrjBdDataImpl implements JmhDaoPrjBdData {
 		return resultCount;
 	}
 
+	//조회
 	@Override
 	public PrjBdData selectBoard(PrjBdData prjBdData) {
 		
@@ -126,6 +210,7 @@ public class JmhDaoPrjBdDataImpl implements JmhDaoPrjBdData {
 		return selectPrjBdData;
 	}
 
+	//수정
 	@Override
 	public int updateBoard(PrjBdData prjBdData) {
 		
@@ -148,6 +233,7 @@ public class JmhDaoPrjBdDataImpl implements JmhDaoPrjBdData {
 		return resultCount;
 	}
 
+	//삭제
 	@Override
 	public int deleteBoard(PrjBdData prjBdData) {
 
@@ -170,6 +256,7 @@ public class JmhDaoPrjBdDataImpl implements JmhDaoPrjBdData {
 		return resultCount;
 	}
 
+	//조회수
 	@Override
 	public int readCount(PrjBdData prjBdData) {
 		
@@ -192,6 +279,7 @@ public class JmhDaoPrjBdDataImpl implements JmhDaoPrjBdData {
 		return resultCount;
 	}
 
+	//추천여부 확인
 	@Override
 	public BdDataGood checkGoodList(BdDataGood bdDataGood) {
 
@@ -216,6 +304,7 @@ public class JmhDaoPrjBdDataImpl implements JmhDaoPrjBdData {
 		return resultBdDataGood;
 	}
 
+	//추천목록에 추가
 	@Override
 	public int insertGoodList(BdDataGood bdDataGood) {
 		
@@ -238,6 +327,7 @@ public class JmhDaoPrjBdDataImpl implements JmhDaoPrjBdData {
 		return resultCount;
 	}
 	
+	//추천목록 조회
 	@Override
 	public List<BdDataGood> selectGoodList(BdDataGood bdDataGood) {
 		
@@ -255,7 +345,7 @@ public class JmhDaoPrjBdDataImpl implements JmhDaoPrjBdData {
 		return resultBdDataGoodList;
 	}
 	
-
+	//추천수 저장
 	@Override
 	public int updateGoodCount(PrjBdData prjBdData) {
 
@@ -278,6 +368,7 @@ public class JmhDaoPrjBdDataImpl implements JmhDaoPrjBdData {
 		return resultCount;
 	}
 
+	//답글 계층 처리
 	@Override
 	public int updateOtherReply(PrjBdData prjBdData) {
 
@@ -300,6 +391,7 @@ public class JmhDaoPrjBdDataImpl implements JmhDaoPrjBdData {
 		return resultCount;
 	}
 
+	//댓글 등록
 	@Override
 	public int insertComment(BdDataComt bdDataComt) {
 		
@@ -322,6 +414,7 @@ public class JmhDaoPrjBdDataImpl implements JmhDaoPrjBdData {
 		return resultCount;
 	}
 
+	//댓글 조회
 	@Override
 	public List<BdDataComt> selectCommentList(BdDataComt bdDataComt) {
 		
@@ -339,6 +432,7 @@ public class JmhDaoPrjBdDataImpl implements JmhDaoPrjBdData {
 		return resultBdDataCommentList;
 	}
 
+	//댓글 삭제
 	@Override
 	public int deleteComment(BdDataComt bdDataComt) {
 		
@@ -360,5 +454,6 @@ public class JmhDaoPrjBdDataImpl implements JmhDaoPrjBdData {
 		System.out.println("JmhDaoImpl deleteComment END...");
 		return resultCount;
 	}
+
 
 }

@@ -25,24 +25,80 @@ public class JmhServicePrjBdDataImpl implements JmhServicePrjBdData {
 
 	//총건수
 	@Override
-	public int totalCount() {
-		System.out.println("JmhServiceImpl totalCount START...");		
-		//-------------------------------------
-		int totalCnt = jmhDataDao.totalCount();
-		//-------------------------------------
+	public int totalCount(PrjBdData prjBdData) {
+		System.out.println("JmhServiceImpl totalCount START...");
+
+		int totalCnt = 0;
+		
+		if(prjBdData.getDoc_group_list() != null) {
+			System.out.println("★doc_group---->"+prjBdData.getDoc_group());
+			System.out.println("★doc_group_list---->"+prjBdData.getDoc_group_list());
+			if(prjBdData.getDoc_group_list().toUpperCase().equals("Y")) {
+				// 알림에서 원글+답글 목록 열때
+				// prj_board_data 조건에 해당하는 Count
+				//------------------------------------------
+				totalCnt = jmhDataDao.alarmCount(prjBdData);
+				//------------------------------------------
+				System.out.println("JmhServiceImpl totalCount totalCnt->" + totalCnt);
+				System.out.println("JmhServiceImpl totalCount END...");
+				return totalCnt;
+			} 
+		}
+		if(prjBdData.getKeyword() != null) {
+			System.out.println("★검색 Search---->"+prjBdData.getSearch());
+			if(!prjBdData.getKeyword().equals("")) {
+				System.out.println("★검색 SearchKeyword---->"+prjBdData.getKeyword());
+				//검색 건수 가져오기
+				//------------------------------------------
+				totalCnt = jmhDataDao.searchCount(prjBdData);
+				//------------------------------------------
+				System.out.println("JmhServiceImpl totalCount totalCnt->" + totalCnt);
+				System.out.println("JmhServiceImpl totalCount END...");
+				return totalCnt;
+			}
+		}
+		//------------------------------------------
+		totalCnt = jmhDataDao.totalCount(prjBdData);
+		//------------------------------------------
+
 		System.out.println("JmhServiceImpl totalCount totalCnt->" + totalCnt);
 		System.out.println("JmhServiceImpl totalCount END...");
 		return totalCnt;
 	}
-	
+
 	//목록
 	@Override
 	public List<PrjBdData> boardList(PrjBdData prjBdData) {
 		System.out.println("JmhServiceImpl boardList START...");
+		
 		List<PrjBdData> prjBdDataList = null;
+		
+		if(prjBdData.getDoc_group_list() != null) {
+			if(prjBdData.getDoc_group_list().toUpperCase().equals("Y")) {
+				// 알림에서 원글+답글 목록 열때
+				// prj_board_data 조건에 해당하는 Count
+				//----------------------------------------------
+				prjBdDataList = jmhDataDao.alarmList(prjBdData);
+				//----------------------------------------------
+				System.out.println("JmhServiceImpl boardList > alarmList END...");
+				return prjBdDataList;
+			}
+		}
+		if(prjBdData.getKeyword() != null) {
+			System.out.println("★검색 Search---->"+prjBdData.getSearch());
+			if(!prjBdData.getKeyword().equals("")) {
+				System.out.println("★검색 SearchKeyword---->"+prjBdData.getKeyword());
+				//-----------------------------------------------
+				prjBdDataList = jmhDataDao.searchList(prjBdData);
+				//-----------------------------------------------
+				System.out.println("JmhServiceImpl boardList > searchList END...");
+				return prjBdDataList;
+			}
+		}		
 		//----------------------------------------------
 		prjBdDataList = jmhDataDao.boardList(prjBdData);
 		//----------------------------------------------
+		
 		System.out.println("JmhServiceImpl boardList END...");
 		return prjBdDataList;
 	}
@@ -112,6 +168,7 @@ public class JmhServicePrjBdDataImpl implements JmhServicePrjBdData {
 		return resultCount;
 	}
 
+	//조회수
 	@Override
 	public int readCount(PrjBdData prjBdData) {
 		System.out.println("JmhServiceImpl readCount START...");
@@ -229,5 +286,7 @@ public class JmhServicePrjBdDataImpl implements JmhServicePrjBdData {
 		System.out.println("JmhServiceImpl deleteComment END...");
 		return resultCount;
 	}
+
+
 
 }

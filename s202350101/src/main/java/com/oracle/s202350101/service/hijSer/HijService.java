@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.oracle.s202350101.model.HijPrjStep;
 import com.oracle.s202350101.model.HijRequestDto;
+import com.oracle.s202350101.model.HijSearchRequestDto;
+import com.oracle.s202350101.model.HijSearchResponseDto;
 import com.oracle.s202350101.model.PrjInfo;
 import com.oracle.s202350101.model.PrjMemList;
 import com.oracle.s202350101.model.PrjStep;
@@ -37,6 +39,8 @@ public interface HijService {
 	PrjStep detailStep(int project_id, int project_step_seq);		// 프로젝트 단계 수정 조회
 	int updateStep(PrjStep prjStep);								// 프로젝트 단계 수정 수행
 	int deleteStep(int project_id, int project_step_seq);     		// 프로젝트 단계 삭제
+	List<HijSearchResponseDto> searchAll(HijSearchRequestDto hijSearchRequestDto); // 통합검색
+		
 	
 	
 	

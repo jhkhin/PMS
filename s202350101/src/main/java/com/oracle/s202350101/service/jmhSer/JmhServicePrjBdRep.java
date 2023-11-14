@@ -7,7 +7,7 @@ import com.oracle.s202350101.model.Code;
 import com.oracle.s202350101.model.PrjBdRep;
 
 public interface JmhServicePrjBdRep {
-	int 			totalCount();
+	int 			totalCount(PrjBdRep prjBdRep);
 	List<PrjBdRep>  boardList(PrjBdRep prjBdRep);
 	List<Code> 		codeList(Code code);
 	int 			insertBoard(PrjBdRep prjBdRep);

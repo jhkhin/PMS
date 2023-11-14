@@ -1,10 +1,12 @@
 package com.oracle.s202350101.controller;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,8 +16,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+
 import com.oracle.s202350101.model.HijPrjStep;
 import com.oracle.s202350101.model.HijRequestDto;
+import com.oracle.s202350101.model.HijSearchRequestDto;
+import com.oracle.s202350101.model.HijSearchResponseDto;
 import com.oracle.s202350101.model.Paging;
 import com.oracle.s202350101.model.PrjInfo;
 import com.oracle.s202350101.model.PrjMemList;
@@ -300,6 +305,23 @@ public class HijController {
 
 		return "/project/manager/prj_mgr_step_read";
 	}
-	
+
+//--------------------------------------------------------------------------------------
+	@PostMapping(value = "search_all")
+	@ResponseBody
+	public List<HijSearchResponseDto> searchAll(@RequestBody HijSearchRequestDto hijSearchRequestDto, Model model){
+		System.out.println("HijController searchAll Start");
+		
+		//HijSearchRequestDto hijSearchRequestDto = new HijSearchRequestDto();
+		//hijSearchRequestDto.setKeyword(keyword);
+		System.out.println("keyword : " + hijSearchRequestDto.getKeyword());
+		
+		// 검색한 결과를 hijSearchResponseDto List로 넣어줌
+		List<HijSearchResponseDto> hijSearchResponseDto = hs.searchAll(hijSearchRequestDto);
+		System.out.println("검색 결과 수 : " +hijSearchResponseDto.size() );
+		System.out.println("HijController searchAll END");
+		return hijSearchResponseDto;
+		
+	}
 		
 }

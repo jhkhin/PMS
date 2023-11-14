@@ -8,8 +8,12 @@ import com.oracle.s202350101.model.Code;
 import com.oracle.s202350101.model.PrjBdData;
 
 public interface JmhDaoPrjBdData {
-	int 			totalCount();
+	int 			totalCount(PrjBdData prjBdData);
+	int 			alarmCount(PrjBdData prjBdData);
+	int 			searchCount(PrjBdData prjBdData);
 	List<PrjBdData>	boardList(PrjBdData prjBdData);
+	List<PrjBdData>	alarmList(PrjBdData prjBdData);
+	List<PrjBdData> searchList(PrjBdData prjBdData);
 	List<Code> 		codeList(Code code);
 	int 			insertBoard(PrjBdData prjBdData);
 	PrjBdData 		selectBoard(PrjBdData prjBdData);

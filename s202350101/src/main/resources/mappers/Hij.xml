@@ -204,6 +204,20 @@
 		DELETE FROM prj_step WHERE  project_id=#{project_id} AND project_step_seq=#{project_step_seq}
 	</delete>
 	
+	<!-- 통합검색 -->
+	<select id="ijSearchList" parameterType="HijSearchRequestDto" resultType="hijSearchResponseDto">
+		SELECT a.*
+		FROM (
+			SELECT t.*, u.user_name user_name, 
+					(SELECT app_name FROM app_info WHERE app_id=t.app_id) app_name 
+			FROM ${tablename} t, USER_INFO u
+			WHERE t.user_id = u.user_id
+		) a
+		WHERE a.subject like '%' || #{keyword} || '%' 
+		OR  a.doc_body like '%' || #{keyword} || '%' 
+		OR  a.user_name like '%' || #{keyword} || '%' 
+	</select>
+	
 	
 </mapper>
 

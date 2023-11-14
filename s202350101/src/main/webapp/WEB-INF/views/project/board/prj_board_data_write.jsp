@@ -75,7 +75,7 @@ $(function() {
 								<td>작성일</td>
 								<td><input type="text" class="form-control" name="create_date_str" value="${todayDate}" readonly></td>
 							</tr>
-							<c:if test="${parent_doc_user_id != ''}">
+							<c:if test="${parent_doc_user_id ne ''}">
 							<tr>
 								<td>원글제목</td>											 
 								<td><a href="javascript:callAction('read','prj_board_data_read?doc_no=${parent_doc_no}&project_id=${project_id}')">${parent_doc_subject}</a></td>
@@ -85,7 +85,7 @@ $(function() {
 								<td>제목</td>
 								<td><input type="text" class="form-control" name="subject" value="${subject}" required="required"></td>
 							</tr>
-							<c:if test="${parent_doc_no == ''}">
+							<c:if test="${parent_doc_no eq ''}">
 							<tr>
 								<td>공지여부</td>
 								<td>
