@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.oracle.s202350101.dao.jmhDao.JmhDaoPrjBdRepImpl;
 import com.oracle.s202350101.model.BdRepComt;
 import com.oracle.s202350101.model.Code;
+import com.oracle.s202350101.model.PrjBdData;
 import com.oracle.s202350101.model.PrjBdRep;
 
 import lombok.RequiredArgsConstructor;
@@ -170,6 +171,20 @@ public class JmhServicePrjBdRepImpl implements JmhServicePrjBdRep {
 		//---------------------------------------------------
 		System.out.println("JmhServiceImpl deleteComment resultCount->"+resultCount);
 		System.out.println("JmhServiceImpl deleteComment END...");
+		return resultCount;
+	}
+
+
+	//댓글들 알림 플래그 일괄 업데이트(N개)
+	@Override
+	public int updateCommentAlarmFlag(PrjBdRep prjBdRep) {
+		System.out.println("JmhServiceImpl updateCommentAlarmFlag START...");
+		int resultCount = 0;				
+		//---------------------------------------------------------
+		resultCount = jmhRepDao.updateCommentAlarmFlag(prjBdRep);
+		//---------------------------------------------------------
+		System.out.println("JmhServiceImpl updateCommentAlarmFlag resultCount->"+resultCount);
+		System.out.println("JmhServiceImpl updateCommentAlarmFlag END...");
 		return resultCount;
 	}
 

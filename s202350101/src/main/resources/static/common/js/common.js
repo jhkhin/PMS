@@ -88,3 +88,11 @@ function deleteCookie(cookieName){
 		setCookie(cookieName,temp,(new Date(1)));
 	}
 }
+
+
+function deleteFlagAttach() {
+	$('#idAttachDeleteFlag').val("D");
+	$('#idAttachFile').hide();
+	$('#idAttachInput').show();
+}
+

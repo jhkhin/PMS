@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-//@Data
+//@Date 
 @Getter
 @Setter
 @ToString
@@ -14,5 +14,4 @@ public class PrjStep {
 	private int		project_order;
 	private String	project_s_name;
 	private String	project_s_context;
-	
 }

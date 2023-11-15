@@ -129,9 +129,10 @@
 						<colgroup>
 							<col width="5%"></col>
 							<col width="40%"></col>
-							<col width="20%"></col>
-							<col width="15%"></col>
 							<col width="10%"></col>
+							<col width="12%"></col>
+							<col width="8%"></col>
+							<col width="15%"></col>
 							<col width="10%"></col>
 						</colgroup>
 						<thead>
@@ -142,6 +143,7 @@
 								<th>작성일</th>
 								<th>분류</th>
 								<th><img src="/common/images/attach/icon_document.png"></th>
+								<th>댓글</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -160,12 +162,12 @@
 								<td>
 									<c:set var="attach_name" value="${board.attach_name}"/>
 								    <c:set var="attach_length" value="${fn:length(attach_name)}"/>
-								    <c:set var="extension_name" value="${fn:substring(attach_name, attach_length-3, attach_length)}" />
+								    <c:set var="extension_name" value="${fn:substringAfter(attach_name, '.')}" />
 									<c:if test="${extension_name ne ''}">
-										<img src="/common/images/attach/icon_${extension_name}.png" alt="${board.attach_name}" 
-								    	style="cursor:pointer" onclick="popup('/upload/${board.attach_path}',800,600)">
+										<a href="javascript:popup('/upload/${board.attach_path}',800,600)"><img src="/common/images/attach/icon_${extension_name}.png" alt="${board.attach_name}"> ${board.attach_name}</a>
 									</c:if>		
 								</td>
+								<td>${board.comment_count}</td>
 							</tr>
 							<c:set var="num" value="${num-1}"></c:set>
 						</c:forEach>

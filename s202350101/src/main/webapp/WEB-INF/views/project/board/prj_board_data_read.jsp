@@ -135,7 +135,10 @@ function drawCommentList(comments){
 	$("#divCommentList").empty();
 	if(comments.length==0){
 		//alert("댓글 정보가 없습니다.");
+		$("#divCommentList").html("");
 		$("#divCommentList").hide();
+		$("#divCommentCount").html("");
+		$("#divCommentCount").hide();
 	}
 	else{
 		$(comments).each(function(index, comment){
@@ -149,10 +152,12 @@ function drawCommentList(comments){
 			if(comment.user_id == "${userInfoDTO.user_id}") { //로그인사용자가 작성한 댓글만 삭제버튼 표시
 				list 	+= '<span style="cursor:pointer;position:absolute;top:5px;right:8px;" onclick="deleteComment(\''+comment.comment_doc_no+'\')">X</span>';
 			}
-			list 	+= '</label>';			
+			list 	+= '</label>';
 			$("#divCommentList").append(list);
 			$("#divCommentList").show();
 		});	
+		$("#divCommentCount").html("댓글 : " + comments.length.toString());
+		$("#divCommentCount").show();
 	}
 }
 
@@ -284,6 +289,7 @@ $(function(){
 							</tr>
 						</table>
 						<!-- 댓글 조회 -->
+						<div id="divCommentCount" style="margin-left:16px"></div>
 						<div id="divCommentList" class="list-group p-3 px-md-3"></div>
 			</div>
 	  		<!------------------------------ //개발자 소스 입력 END ------------------------------->

@@ -44,6 +44,14 @@ public class JmhController {
 	
 	private final JmhServicePrjBdDataImpl jmhDataSer;
 	private final JmhServicePrjBdRepImpl jmhRepSer;
+	
+	//완료 프로젝트 목록
+	@RequestMapping(value = "prj_complete_list")
+	public String prjCompleteList(HttpServletRequest request, Model model) {
+		
+		return "/project/prj_complete_list";
+	}
+	
 
 	//#######################################################################
 	//############  프로젝트 프로젝트 공지/자료 게시판 prj_board_data_OOO  ############
@@ -144,6 +152,7 @@ public class JmhController {
 			model.addAttribute("parent_doc_no", parent_doc_no);
 			model.addAttribute("parent_doc_user_id", selectPrjBdData.getUser_id());
 			model.addAttribute("parent_doc_subject", selectPrjBdData.getSubject());
+			model.addAttribute("alarm_flag", "N");
 		}else {
 			model.addAttribute("doc_group", "0");
 			model.addAttribute("doc_step", "0");
@@ -152,6 +161,7 @@ public class JmhController {
 			model.addAttribute("parent_doc_no", "0");
 			model.addAttribute("parent_doc_user_id", "");
 			model.addAttribute("parent_doc_subject", "");
+			model.addAttribute("alarm_flag", "");
 		}
 		model.addAttribute("project_id", project_id);
 		model.addAttribute("todayDate", todayDate); //작성일
@@ -185,7 +195,7 @@ public class JmhController {
 			//---------------------------------------------------------------------------------------
 			
 			// Service --> DB CRUD
-			prjBdData.setAttach_name(file1.getOriginalFilename());
+			prjBdData.setAttach_name(file1.getOriginalFilename()); 
 			prjBdData.setAttach_path(savedName);			
 		}
 		
@@ -209,7 +219,7 @@ public class JmhController {
 		model.addAttribute("status", "success"); //상태(성공)
 		model.addAttribute("prjBdData", prjBdData);
 		model.addAttribute("redirect", "prj_board_data_list"); //목록으로 이동
-
+ 
 		System.out.println("-----프로젝트 공지/자료 게시판 등록(prj_board_data_insert) END-----");
 		
 		return "forward:/submit_control";
@@ -299,22 +309,38 @@ public class JmhController {
 	@RequestMapping(value = "prj_board_data_read")
 	public String prjBoardDataRead(PrjBdData prjBdData, HttpServletRequest request, Model model) {
 		System.out.println("-----프로젝트 공지/자료 게시판 조회(prj_board_data_read) START-----");
-		
+
+		System.out.println("session.userInfo->"+request.getSession().getAttribute("userInfo"));
+		UserInfo userInfoDTO = (UserInfo) request.getSession().getAttribute("userInfo");
+
 		System.out.println("doc_no->"+prjBdData.getDoc_no());
 		System.out.println("project_id->"+prjBdData.getProject_id());
 
 		//-----------------------------------------------------------
 		int resultCount = jmhDataSer.readCount(prjBdData); //조회수 증가
 		//-----------------------------------------------------------
-		
+				
 		//------------------------------------------------------------
 		PrjBdData selectPrjBdData = jmhDataSer.selectBoard(prjBdData);
 		//------------------------------------------------------------
-		System.out.println("subject->"+selectPrjBdData.getSubject());
+		System.out.println("subject->"+selectPrjBdData.getSubject());		
+				
+		if(userInfoDTO.getUser_id().equals(selectPrjBdData.getParent_doc_user_id())) {
+			//현재 로그인 사용자가 답글의 부모글 작성자인 경우 답글 조회시 alarm_flag='Y'로 변경처리
+			System.out.println("부모글작성자가 답글조회시 alarm_flag='Y'로 변경처리");
+			//---------------------------------------------------------------------------
+			int updateReplyAlarmCount = jmhDataSer.updateReplyAlarmFlag(selectPrjBdData);
+			//---------------------------------------------------------------------------
+		}
 		
-		System.out.println("session.userInfo->"+request.getSession().getAttribute("userInfo"));
-		UserInfo userInfoDTO = (UserInfo) request.getSession().getAttribute("userInfo");
-		
+		if(userInfoDTO.getUser_id().equals(selectPrjBdData.getUser_id())) {
+			//현재 로그인 사용자가 글작성자인 경우 댓글들 alarm_flag='Y'로 일괄 변경처리
+			System.out.println("글작성자가 자신글 조회시 댓글들 alarm_flag='Y'로 일괄 변경처리");
+			//-------------------------------------------------------------------------------
+			int updateCommentAlarmCount = jmhDataSer.updateCommentAlarmFlag(selectPrjBdData);
+			//-------------------------------------------------------------------------------
+		}
+				
 		model.addAttribute("userInfoDTO", userInfoDTO); //로그인사용자 정보
 		model.addAttribute("board", selectPrjBdData);
 		

@@ -49,7 +49,7 @@ $(function() {
 						<input type="hidden" name="parent_doc_no" value="${parent_doc_no}">
 						<input type="hidden" name="attach_name" value="">
 						<input type="hidden" name="attach_path" value="">
-						<input type="hidden" name="alarm_flag" value="">
+						<input type="hidden" name="alarm_flag" value="${alarm_flag}">
 						
 						<div style="margin-top:20px;height:34px">
 							<h3>문서 작성</h3>

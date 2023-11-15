@@ -264,6 +264,7 @@ public class JmhServicePrjBdDataImpl implements JmhServicePrjBdData {
 	}
 
 	//댓글 조회
+	@Override
 	public List<BdDataComt> selectCommentList(BdDataComt bdDataComt) {
 		System.out.println("JmhServiceImpl selectCommentList START...");
 		List<BdDataComt> resultBdDataComtList = null;				
@@ -276,6 +277,7 @@ public class JmhServicePrjBdDataImpl implements JmhServicePrjBdData {
 	}
 
 	//댓글 삭제
+	@Override
 	public int deleteComment(BdDataComt bdDataComt) {
 		System.out.println("JmhServiceImpl deleteComment START...");
 		int resultCount = 0;				
@@ -287,6 +289,31 @@ public class JmhServicePrjBdDataImpl implements JmhServicePrjBdData {
 		return resultCount;
 	}
 
+	//답글 알림 플래그 업데이트(1개)
+	@Override
+	public int updateReplyAlarmFlag(PrjBdData prjBdData) {
+		System.out.println("JmhServiceImpl updateReplyAlarmFlag START...");
+		int resultCount = 0;				
+		//-------------------------------------------------------
+		resultCount = jmhDataDao.updateReplyAlarmFlag(prjBdData);
+		//-------------------------------------------------------
+		System.out.println("JmhServiceImpl updateReplyAlarmFlag resultCount->"+resultCount);
+		System.out.println("JmhServiceImpl updateReplyAlarmFlag END...");
+		return resultCount;
+	}
+
+	//댓글들 알림 플래그 일괄 업데이트(N개)
+	@Override
+	public int updateCommentAlarmFlag(PrjBdData prjBdData) {
+		System.out.println("JmhServiceImpl updateCommentAlarmFlag START...");
+		int resultCount = 0;				
+		//---------------------------------------------------------
+		resultCount = jmhDataDao.updateCommentAlarmFlag(prjBdData);
+		//---------------------------------------------------------
+		System.out.println("JmhServiceImpl updateCommentAlarmFlag resultCount->"+resultCount);
+		System.out.println("JmhServiceImpl updateCommentAlarmFlag END...");
+		return resultCount;
+	}
 
 
 }

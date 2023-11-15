@@ -280,4 +280,28 @@ public class JmhDaoPrjBdRepImpl implements JmhDaoPrjBdRep {
 		System.out.println("JmhDaoImpl deleteComment END...");
 		return resultCount;
 	}
+	
+
+	//댓글들 알림 플래그 일괄 업데이트(N개)
+	@Override
+	public int updateCommentAlarmFlag(PrjBdRep prjBdRep) {
+		
+		System.out.println("JmhDaoImpl updateCommentAlarmFlag START...");
+		int resultCount = 0;	
+		try {
+			//----------------------------------------------------------------------------
+			resultCount = session.insert("jmhPrjBdRepUpdateCommentAlarmFlag", prjBdRep);
+			//----------------------------------------------------------------------------
+			System.out.println("resultCount->"+resultCount);
+			if(resultCount > 0) {
+				//성공
+			}else {
+				System.out.println("SQL오류");
+			}
+		} catch (Exception e) {
+			System.out.println("JmhDaoImpl updateCommentAlarmFlag Exception->"+e.getMessage());
+		}
+		System.out.println("JmhDaoImpl updateCommentAlarmFlag END...");
+		return resultCount;
+	}
 }

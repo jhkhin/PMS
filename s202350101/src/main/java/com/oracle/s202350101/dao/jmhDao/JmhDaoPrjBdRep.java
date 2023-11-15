@@ -20,4 +20,5 @@ public interface JmhDaoPrjBdRep {
 	int 			insertComment(BdRepComt bdRepComt);
 	List<BdRepComt> selectCommentList(BdRepComt bdRepComt);
 	int 			deleteComment(BdRepComt bdRepComt);
+	int 			updateCommentAlarmFlag(PrjBdRep prjBdRep);
 }

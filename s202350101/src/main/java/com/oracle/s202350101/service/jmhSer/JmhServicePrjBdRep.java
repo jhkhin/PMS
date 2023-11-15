@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.oracle.s202350101.model.BdRepComt;
 import com.oracle.s202350101.model.Code;
+import com.oracle.s202350101.model.PrjBdData;
 import com.oracle.s202350101.model.PrjBdRep;
 
 public interface JmhServicePrjBdRep {
@@ -17,4 +18,5 @@ public interface JmhServicePrjBdRep {
 	int 			insertComment(BdRepComt bdRepComt);
 	List<BdRepComt> selectCommentList(BdRepComt bdRepComt);
 	int 			deleteComment(BdRepComt bdRepComt);
+	int 			updateCommentAlarmFlag(PrjBdRep prjBdRep);
 }

@@ -28,4 +28,6 @@ public interface JmhDaoPrjBdData {
 	int 			insertComment(BdDataComt bdDataComt);
 	List<BdDataComt> selectCommentList(BdDataComt bdDataComt);
 	int 			deleteComment(BdDataComt bdDataComt);
+	int 			updateReplyAlarmFlag(PrjBdData prjBdData);
+	int 			updateCommentAlarmFlag(PrjBdData prjBdData);
 }

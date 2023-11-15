@@ -32,7 +32,8 @@
 					 FROM CODE 
 					 WHERE UPPER(table_name)='PRJ_BD_DATA' 
 					 AND UPPER(field_name)='BD_CATEGORY' 
-					 AND cate_code=p.bd_category) bd_category_name
+					 AND cate_code=p.bd_category) bd_category_name, 
+					(SELECT Count(*) FROM BD_DATA_COMT WHERE doc_no=p.doc_no AND project_id=p.project_id) comment_count
 			FROM PRJ_BD_DATA p, USER_INFO u 
 			WHERE p.user_id = u.user_id			
 			ORDER BY doc_group DESC, doc_step
@@ -67,7 +68,8 @@
 							 FROM CODE 
 							 WHERE UPPER(table_name)='PRJ_BD_DATA' 
 							 AND UPPER(field_name)='BD_CATEGORY' 
-							 AND cate_code=p.bd_category) bd_category_name
+							 AND cate_code=p.bd_category) bd_category_name,
+							(SELECT Count(*) FROM BD_DATA_COMT WHERE doc_no=p.doc_no AND project_id=p.project_id) comment_count
 					  FROM PRJ_BD_DATA p, USER_INFO u 
 					  WHERE p.user_id = u.user_id 
 					  AND p.project_id = #{project_id} 
@@ -88,7 +90,8 @@
 							 FROM CODE 
 							 WHERE UPPER(table_name)='PRJ_BD_DATA' 
 							 AND UPPER(field_name)='BD_CATEGORY' 
-							 AND cate_code=p.bd_category) bd_category_name
+							 AND cate_code=p.bd_category) bd_category_name, 
+							(SELECT Count(*) FROM BD_DATA_COMT WHERE doc_no=p.doc_no AND project_id=p.project_id) comment_count
 					  FROM PRJ_BD_DATA p, USER_INFO u 
 					  WHERE p.user_id = u.user_id 
 					  AND p.project_id = #{project_id} 
@@ -110,7 +113,8 @@
 							 FROM CODE 
 							 WHERE UPPER(table_name)='PRJ_BD_DATA' 
 							 AND UPPER(field_name)='BD_CATEGORY' 
-							 AND cate_code=p.bd_category) bd_category_name
+							 AND cate_code=p.bd_category) bd_category_name, 
+							(SELECT Count(*) FROM BD_DATA_COMT WHERE doc_no=p.doc_no AND project_id=p.project_id) comment_count
 					  FROM PRJ_BD_DATA p, USER_INFO u 
 					  WHERE p.user_id = u.user_id 
 					  ORDER BY doc_group DESC, doc_step) a
@@ -281,6 +285,19 @@
 		DELETE BD_DATA_COMT 
 		WHERE DOC_NO=#{doc_no} AND PROJECT_ID=#{project_id} AND COMMENT_DOC_NO=#{comment_doc_no}
 	</delete>
+	
+	<!-- 답글 알림플래그 Y처리 -->
+	<update id="jmhPrjBdDataUpdateReplyAlarmFlag" parameterType="PrjBdData">
+		UPDATE PRJ_BD_DATA 
+		SET ALARM_FLAG='Y' 
+		WHERE DOC_NO=#{doc_no} AND PROJECT_ID=#{project_id}
+	</update>
 
+	<!-- 댓글 알림플래그 Y처리 -->
+	<update id="jmhPrjBdDataUpdateCommentAlarmFlag" parameterType="PrjBdData">
+		UPDATE BD_DATA_COMT 
+		SET ALARM_FLAG='Y' 
+		WHERE DOC_NO=#{doc_no} AND PROJECT_ID=#{project_id}
+	</update>
 
 </mapper>
