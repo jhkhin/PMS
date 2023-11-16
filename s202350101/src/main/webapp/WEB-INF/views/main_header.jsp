@@ -7,9 +7,9 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 	body{
 	 -ms-overflow-style: none;
 	 }
-	::-webkit-scrollbar {
+/* 	::-webkit-scrollbar {
 	  display: none;
-	}
+	} */
 	#notify {
 	    position: absolute;
 	    width: 350px;
@@ -439,6 +439,15 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 
 <script type="text/javascript">
 //인정
+//  $(function(){ 아래 코드랑 같음
+	$(document).ready(function(){
+		$("#search").keydown(function (key) {
+			if(key.keyCode == 13) {
+		      searchAll();
+			}
+		});
+	});
+
     function searchAll(){
     	var keyword = $("input[name=keyword]").val(); // 검색어
     	var params = {};
@@ -452,7 +461,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
     		dataType	: 'json',
     		success		: function(data){
     			//alert(data);
-			    showSearchList(data);
+			    showSearchList(data, keyword);
 			},
 			error		: function(xhr, status, error){
 				console.log("상태값 : " + xhr.status + "\tHttp 에러메시지 : " + xhr.responseText);
@@ -460,34 +469,47 @@ uri="http://java.sun.com/jsp/jstl/core" %>
     	});
     	
     }
-    
-    function showSearchList(docList){
-    	if(docList.length==0){
+/* 
+   */
+  
+    // 검색(인정)
+    function showSearchList(docList, keyword){
+    	if(Object.keys(docList).length==0){
     		alert("해당 검색 결과가 없습니다.");
     	}
     	else{
         	$("#center").empty();
+        	var list = '';        	
+        	list += '<div class="container-fluid"><div style="margin-top:20px;height:45px"><h3>통합 검색 결과</h3></div>검색결과 ' + Object.keys(docList).length + '건   검색어:' + keyword + '</div>';
+        	$("#center").append(list);
+        	list = '<div class="container-fluid"><div style="width:85%;" id="divSearchResult"></div></div>';
+        	$("#center").append(list);
     		$(docList).each(function(index, doc){
     			//alert("제목 :"+doc.subject);
-    			var list = '---------------------------------------------------------';
-    			list	+= '<label class="list-group-item d-flex gap-2">';
-    			list 	+= '<span>';
-    			if(doc.app_id == "1"){
-    				list	+= '['+doc.bd_category+'] '+doc.subject+"<br>";
-    			}else{
-    				list	+= '['+doc.app_name+'] '+doc.subject+"<br>";	
-    			} 			
-    			list 	+= doc.doc_body;
-    			list 	+= '<small class="d-block text-body-secondary">작성자 : ' + doc.user_name + '</small>';
-    			//작성일 표시처리 : common.js안에 formatDateTime() : 2023-11-09T01:44:25.000+00:00->2023-11-09 01:44:25
-    			list 	+= '<small class="d-block text-body-secondary">작성일 : ' + formatDateTime(doc.create_date) + '</small>';
     			
-    			list 	+= '</span>';
-    			list 	+= '</label>';			
-    			$("#center").append(list);
-    		});	
+				list = '<div class="d-flex text-body-secondary pt-3">';
+				list += '<svg class="bd-placeholder-img flex-shrink-0 me-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 32x32" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#007bff"></rect><text x="50%" y="50%" fill="#007bff" dy=".3em">32x32</text></svg>';
+				list += '<div class="pb-3 mb-0 small lh-sm border-bottom w-100">';
+				list += '<div class="d-flex justify-content-between">';
+				list += '<strong class="text-gray-dark"><a href="javascript:popup(\'bd_free?doc_no=\')">'+doc.subject+'</a> | ';
+				if(doc.app_id == "1"){
+    				list	+= doc.bd_category;
+    			}else{
+    				list	+= doc.app_name;	
+    			}
+				list += '</strong>';
+				list += '<a href="#">' + doc.user_name + ' ' + formatDateTime(doc.create_date) + '</a>';
+				list += '</div>';
+				list += '<span class="d-block">' + doc.doc_body + '</span>';
+				list += '</div>';
+				list += '</div>';
+    			 
+    			$("#divSearchResult").append(list);
+    		});
     	}
     }
+    
+  
 </script>
 
 <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
@@ -522,7 +544,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 				<button type="button" onclick="notifyClick()">알림</button>
 			</div>
 			<div class="d-flex" role="search" style="margin-left:10px">        
-				<input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="keyword">
+				<input id="search" class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="keyword">
 				<button class="btn btn-outline-secondary" type="submit" onclick="searchAll()">Search</button>
 			</div>
 		</div>
