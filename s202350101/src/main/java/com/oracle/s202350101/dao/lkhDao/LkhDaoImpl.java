@@ -4,6 +4,7 @@ package com.oracle.s202350101.dao.lkhDao;
 import java.util.*;
 
 import com.oracle.s202350101.model.*;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,6 @@ import org.springframework.util.FileCopyUtils;
 @RequiredArgsConstructor
 public class LkhDaoImpl implements LkhDao {
 	private final SqlSession sqlSession;
-	private final PlatformTransactionManager transactionManager;
 
 	// 도넛 그래프
 	@Override
@@ -77,21 +77,10 @@ public class LkhDaoImpl implements LkhDao {
 		return prjInfo;
 	}
 
-	public int task_count(int project_id, Optional<String> search) {
+	public int task_count(Task task) {
 		int taskCount = 0;
-
-		Map<String, Object> params = new HashMap<>();
-		params.put("project_id", project_id);
 		try {
-			if (search != null && search.isPresent() && search.get() != null && !search.get().isEmpty()) {
-				params.put("search", search.get());
-				taskCount = sqlSession.selectOne("task_count", params);
-			}
-			else{
-				taskCount = sqlSession.selectOne("task_count", params);
-				params.put("search", null);
-			}
-
+				taskCount = sqlSession.selectOne("task_count", task);
 		} catch (Exception e) {
 			log.info("dao : task_count error Message -> {}", e.getMessage());
 		}
@@ -180,10 +169,10 @@ public class LkhDaoImpl implements LkhDao {
 
 	//작업별 타임라인
 	@Override
-	public List<Task> task_timeline() {
+	public List<Task> task_timeline(int project_id) {
 		List<Task> timelineTask = null;
 		try {
-			timelineTask = sqlSession.selectList("task_timeline");
+			timelineTask = sqlSession.selectList("task_timeline",project_id);
 
 		} catch (Exception e) {
 			log.info("dao :task_timeline error Message -> {}", e.getMessage());
@@ -220,91 +209,144 @@ public class LkhDaoImpl implements LkhDao {
 	}
 
 
-	// task_create post 실행
+
+
+	///////////// 작업 생성 ///////////////////////
+
 	@Override
-	public int task_create(Task task) {
+	public int task_create(Task task) throws Exception {
 		int result = 0;
 		try {
 			result = sqlSession.insert("task_create", task);
 		} catch (Exception e) {
-			log.info("dao :task_create error Message -> {}", e.getMessage());
+			// 로깅은 여기서 수행
+			log.error("dao: task_create error Message -> {}", e.getMessage());
+			// 예외를 상위로 전파
+			throw new Exception("task_create 메서드에서 예외 발생", e);
 		}
 		return result;
 	}
-
 	@Override
-	public int task_worker_create(List<TaskSub> taskSubList) {
+	public int task_worker_create(@Param("list") List<TaskSub> taskSubList) throws Exception {
 		int result = 0;
 		try {
 			result = sqlSession.insert("task_worker_create", taskSubList);
 		} catch (Exception e) {
-			log.info("dao :task_worker_create error Message -> {}", e.getMessage());
+			// 로깅은 여기서 수행
+			log.error("dao: task_worker_create error Message -> {}", e.getMessage());
+			// 예외를 상위로 전파
+			throw new Exception("task_worker_create 메서드에서 예외 발생", e);
 		}
 		return result;
 	}
 
 	@Override
-	public int task_attach_create(List<TaskAttach> taskAttachList) {
+	public int task_attach_create(@Param("list") List<TaskAttach> taskAttachList) throws Exception {
 		int result = 0;
 		try {
 			result = sqlSession.insert("taskAttach_create", taskAttachList);
 		} catch (Exception e) {
-			log.info("dao :taskAttach_create error Message -> {}", e.getMessage());
+			// 로깅은 여기서 수행
+			log.error("dao: taskAttach_create error Message -> {}", e.getMessage());
+			// 예외를 상위로 전파
+			throw new Exception("task_attach_create 메서드에서 예외 발생", e);
+		}
+		return result;
+	}
+
+
+//
+
+
+	public  int	task_attach_max(int task_id){
+		int result = 0;
+		try {
+			result = sqlSession.selectOne("taskAttach_max",task_id);
+		} catch (Exception e) {
+			log.info("dao :task_attach_max error Message -> {}", e.getMessage());
 		}
 		return result;
 	}
 
 	@Override
-	public int task_update(Task task) {
+	public int task_update(Task task) throws Exception{
 		int result =0;
 		try {
 			result = sqlSession.update("task_update",task);
 		}
 		catch (Exception e) {
 			log.info("dao :task_update error Message -> {}", e.getMessage());
+			throw new Exception("task_update error Message ->", e);
 		}
 		return result;
 	}
 
 	@Override
-	public int task_worker_init(int projectId,int taskId) {
+	public int task_worker_init(int projectId,int taskId) throws Exception {
 		int result = 0;
-		try{
+		try{				//update엿음
 			Map<String, Integer> params = new HashMap<>();
 			params.put("task_id", taskId);
 			params.put("project_id", projectId);
-			result = sqlSession.update("task_worker_init",params);
+			result = sqlSession.delete("task_worker_init",params);
 		}catch (Exception e) {
 			log.info("dao :task_worker_init error Message -> {}", e.getMessage());
+			throw new Exception("dao :task_worker_init error Message ->", e);
 		}
 		return result;
 	}
 
 	@Override
-	public int task_worker_update(List<TaskSub> taskSubList) {
+	public int task_worker_update(List<TaskSub> taskSubList)  throws Exception{
 		int reuslt =0;
-		try {
-			reuslt = sqlSession.update("task_worker_update",taskSubList);
+		try {						//update엿음
+			reuslt = sqlSession.insert("task_worker_update",taskSubList);
 		}
 		catch (Exception e) {
 			log.info("dao :task_worker_update error Message -> {}", e.getMessage());
+			throw new Exception("dao :task_worker_update error Message ->", e);
+		}
+		return reuslt;
+
+	}
+
+	public TaskAttach physical_file_delete(TaskAttach  taskAttach) throws Exception{
+		TaskAttach resultTaskAttach = null;
+		try {
+			resultTaskAttach = sqlSession.selectOne("physical_file_delete",taskAttach);
+		}catch (Exception e){
+			log.info("dao :physical_file_delete error Message -> {}", e.getMessage());
+			throw new Exception("dao :physical_file_delete Message ->{}", e);
+		}
+
+		return resultTaskAttach;
+	}
+
+	@Override
+	public int task_attach_delete(TaskAttach taskAttach) throws Exception{
+		int reuslt =0;
+		try {
+			reuslt = sqlSession.delete("task_attach_delete",taskAttach);
+		}
+		catch (Exception e) {
+			log.info("dao :task_attach_deletee error Message -> {}", e.getMessage());
+			throw new Exception("dao :task_attach_delete Message ->", e);
 		}
 		return reuslt;
 
 	}
 
 	@Override
-	public int task_attach_update(List<TaskAttach> taskAttachList) {
+	public int task_attach_update(List<TaskAttach> taskAttachList) throws Exception{
 		int reuslt =0;
-		try {
-			reuslt = sqlSession.update("task_attach_update",taskAttachList);
+		try {				//update엿음
+			reuslt = sqlSession.insert("task_attach_update",taskAttachList);
 		}
 		catch (Exception e) {
 			log.info("dao :task_attach_update error Message -> {}", e.getMessage());
+			throw new Exception("dao :task_attach_update error Message ->", e);
 		}
 		return reuslt;
-
-
 	}
 
 

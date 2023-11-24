@@ -17,17 +17,19 @@ import com.oracle.s202350101.model.UserInfo;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class UserInfoServiceImpl implements UserInfoService {
 
     private final UserInfoDao UIdao;
 
     @Override
     public UserInfo findbyuserId(UserInfo userInfo) {
-        log.info("findbyuserId start ID : " + userInfo.getUser_id());
+//        log.info("findbyuserId start ID : " + userInfo.getUser_id());
         userInfo = UIdao.findbyuserId(userInfo);
         return userInfo;
     }
@@ -50,6 +52,21 @@ public class UserInfoServiceImpl implements UserInfoService {
         kjo.setObj(page);
 
         return kjo;
+    }
+
+    //<!--특정 강의실 내 어드민 제외 사용자 조회 & 채팅 사용-->
+    @Override
+    public List<UserInfo> findbyClassUserAndChatEnv(UserInfo userInfo) {
+        log.info("findbyclassuser start");
+        List<UserInfo> UIList = UIdao.findbyClassUserAndChatEnv(userInfo);
+        return UIList;
+    }
+//	어드민의 모든 학생 조회
+    @Override
+    public List<UserInfo> findAllUser() {
+        log.info("findAllUser start");
+        List<UserInfo> UIList = UIdao.findAllUser();
+        return UIList;
     }
 
 

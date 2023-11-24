@@ -9,23 +9,20 @@
 
 <!--CSS START -->
 <style type="text/css">
-	#meetingList {
-		padding: 20px;
-	}
-	
 	#meeting {
 		width: 80%;
 		padding: 20px;
-		text-align: center;
+		text-align: center;]
 	}
 	#title {
 		width: 80%;
 		text-align: center;
 		font-size: 25pt;
+		margin-bottom: 30px;
 	}
 	table tr {
 		height: 50px;
-		border-bottom: solid gray 1px;
+		border-top: solid gray 1px;
 	}
 	table td {
 		text-align: left;
@@ -35,15 +32,17 @@
 	.button {
 		text-align: center;
 	}
-	.uploadFile {
-		height: 100px;
-		padding-right: 20px;
-	}
 	.box {
 		width: 80%;
 	}
 	textarea {
 		width: 80%;
+	}
+	input.form-control.form-control-sm.uploadFile {
+    	width: 80%;
+	}
+	.textbox {
+		height: 150px;
 	}
 </style>
 <!-- CSS END -->
@@ -97,6 +96,28 @@
 			<!-- 본문 -->
 			<main id="center" class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
 				<!------------------------------ //개발자 소스 입력 START ------------------------------->
+				<div id="category_title">
+					<svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+					  <symbol id="house-door-fill" viewBox="0 0 16 16">
+					    <path d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5z"></path>
+					  </symbol>
+					</svg>		
+					<nav aria-label="breadcrumb" style="padding-top:5px;padding-left: calc(var(--bs-gutter-x) * 0.5);">
+					    <ol class="breadcrumb breadcrumb-chevron p-1">
+					      <li class="breadcrumb-item">
+					        <a class="link-body-emphasis" href="/main">
+					          <svg class="bi" width="16" height="16"><use xlink:href="#house-door-fill"></use></svg>
+					          <span class="visually-hidden">Home</span>
+					        </a>
+					      </li>
+					      <li class="breadcrumb-item">
+					        <a class="link-body-emphasis fw-semibold text-decoration-none" href="/dashboard">프로젝트</a>
+					      </li>
+					      <li class="breadcrumb-item active" aria-current="page">회의록</li>
+					    </ol>
+					</nav>
+				</div>
+				
 				<div id="meetingList">
 					<label id="title">회의록</label>
 					<form action="prj_meeting_report_update_2" method="post" enctype="multipart/form-data">
@@ -120,7 +141,7 @@
 							</c:forEach>
 							<tr>
 								<th>참석자</th>
-								<td>
+								<td class="box">
 									<c:forEach items="${prjMemList}" var="prjMem">
 										<c:set var="result" value="0" />
 										<c:forEach items="${meeting}" var="meet">
@@ -130,10 +151,10 @@
 										</c:forEach>
 										<c:choose>
 											<c:when test="${result > 0}">
-												<input type="checkbox" name="meetuser_id" value="${prjMem.user_id }" checked> ${prjMem.user_name} 
+												<input type="checkbox" name="meetuser_id" value="${prjMem.user_id }" checked> ${prjMem.user_name}&nbsp;&nbsp;
 										    </c:when>
 											<c:otherwise>
-												<input type="checkbox" name="meetuser_id" value="${prjMem.user_id }"> ${prjMem.user_name} 
+												<input type="checkbox" name="meetuser_id" value="${prjMem.user_id }"> ${prjMem.user_name}&nbsp;&nbsp;
 										    </c:otherwise>
 										</c:choose>
 									</c:forEach>
@@ -159,12 +180,25 @@
 								</tr>
 								<tr>
 									<th>첨부파일</th>
-									<td><input type="file" name="file1">
-										<img class="uploadFile" alt="UpLoad File" src="${pageContext.request.contextPath}/${meeting.attach_path }/${meeting.attach_name}"> ${meeting.attach_name}</td>
+									<td>
+										<input type="hidden" name="attach_name" value="${meeting.attach_name}">
+										<input type="hidden" name="attach_path" value="${meeting.attach_path}">
+										<input type="hidden" name="attach_delete_flag" id="idAttachDeleteFlag" value="">
+										<div id="idAttachFile">
+											<c:if test="${meeting.attach_name ne null}">
+												<a href="/${meeting.attach_path}/${meeting.attach_name}" target="_blank">${meeting.attach_name}</a>
+												&nbsp;&nbsp;<img src="/common/images/btn_icon_delete2.png" onclick="deleteFlagAttach()" style="cursor:pointer">
+												<%-- <img alt="UpLoad Image" src="${pageContext.request.contextPath}/upload/${board.attach_path}" width="100"> --%>
+											</c:if>
+										</div>
+										<div id="idAttachInput" <c:if test="${meeting.attach_name ne null}">style="display:none;"</c:if> >
+											<input type="file" class="form-control form-control-sm uploadFile" name="file1">
+										</div>
+									</td>
 								</tr>
 								<tr>
 									<th>회의내용</th>
-									<td><textarea rows="5" cols="30" name="meeting_content">${meeting.meeting_content}</textarea></td>
+									<td class="textbox"><textarea rows="6" cols="30" name="meeting_content">${meeting.meeting_content}</textarea></td>
 								</tr>
 							</c:forEach>
 							<tr>

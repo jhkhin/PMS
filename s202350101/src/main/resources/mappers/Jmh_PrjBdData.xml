@@ -36,18 +36,18 @@
 					(SELECT Count(*) FROM BD_DATA_COMT WHERE doc_no=p.doc_no AND project_id=p.project_id) comment_count
 			FROM PRJ_BD_DATA p, USER_INFO u 
 			WHERE p.user_id = u.user_id			
-			ORDER BY doc_group DESC, doc_step
+			ORDER BY p.doc_group DESC, p.doc_step
 		)
 		WHERE project_id = #{project_id} 
 		AND 
 		<choose>
-			<when test="search == 's_subject'">
+			<when test="search == '1_subject'">
 				 subject like '%' || #{keyword} || '%'
 			</when>
-			<when test="search == 's_user_name'">
+			<when test="search == '2_user_name'">
 				 user_name like '%' || #{keyword} || '%'
 			</when>
-			<when test="search == 's_category'">
+			<when test="search == '3_bd_category'">
 				 bd_category_name like '%' || #{keyword} || '%'
 			</when>
 			<otherwise>
@@ -73,7 +73,7 @@
 					  FROM PRJ_BD_DATA p, USER_INFO u 
 					  WHERE p.user_id = u.user_id 
 					  AND p.project_id = #{project_id} 
-					  ORDER BY doc_group DESC, doc_step) a
+					  ORDER BY p.doc_group DESC, p.doc_step) a
 		)
 		WHERE rn BETWEEN #{start} AND #{end}
 	</select>
@@ -96,7 +96,7 @@
 					  WHERE p.user_id = u.user_id 
 					  AND p.project_id = #{project_id} 
 					  AND p.doc_group = #{doc_group}
-					  ORDER BY doc_group DESC, doc_step) a
+					  ORDER BY p.doc_group DESC, p.doc_step) a
 		)
 		WHERE rn BETWEEN #{start} AND #{end}
 	</select>
@@ -117,18 +117,18 @@
 							(SELECT Count(*) FROM BD_DATA_COMT WHERE doc_no=p.doc_no AND project_id=p.project_id) comment_count
 					  FROM PRJ_BD_DATA p, USER_INFO u 
 					  WHERE p.user_id = u.user_id 
-					  ORDER BY doc_group DESC, doc_step) a
+					  ORDER BY p.doc_group DESC, p.doc_step) a
 			WHERE
 			a.project_id = #{project_id} 
 			AND 
 			<choose>
-				<when test="search == 's_subject'">
+				<when test="search == '1_subject'">
 					 a.subject like '%' || #{keyword} || '%'
 				</when>
-				<when test="search == 's_user_name'">
+				<when test="search == '2_user_name'">
 					 a.user_name like '%' || #{keyword} || '%'
 				</when>
-				<when test="search == 's_category'">
+				<when test="search == '3_bd_category'">
 					 a.bd_category_name like '%' || #{keyword} || '%'
 				</when>
 				<otherwise>
@@ -145,6 +145,7 @@
 		SELECT * 
 		FROM CODE 
 		WHERE UPPER(table_name)=#{table_name} AND UPPER(field_name)=#{field_name}
+		ORDER BY table_name, field_name, cate_code
 	</select>
 	
 	<!-- 문서 등록 -->
@@ -209,27 +210,40 @@
 			DOC_BODY	= #{doc_body},
 			ATTACH_NAME	= #{attach_name}, 
 			ATTACH_PATH	= #{attach_path}
-		WHERE DOC_NO=#{doc_no} AND PROJECT_ID=#{project_id}
+		WHERE doc_no=#{doc_no} AND project_id=#{project_id}
 	</update>
 	
 	<!-- 문서 삭제 -->
 	<delete id="jmhPrjBdDataDeleteBoard" parameterType="PrjBdData">
 		DELETE PRJ_BD_DATA 
-		WHERE DOC_NO=#{doc_no} AND PROJECT_ID=#{project_id}
+		WHERE doc_no=#{doc_no} AND project_id=#{project_id}
 	</delete>
 	
+	<!-- 문서의 댓글들 모두 삭제 -->
+	<delete id="jmhPrjBdDataDeleteCommentBoard" parameterType="PrjBdData">
+		DELETE BD_DATA_COMT 
+		WHERE doc_no=#{doc_no} AND project_id=#{project_id}
+	</delete>
+	
+	<!-- 문서의 하위 답글들 가져오기 -->
+	<select id="jmhPrjBdDataSelectReplyBoard" parameterType="PrjBdData" resultType="PrjBdData">
+		SELECT *
+		FROM PRJ_BD_DATA 
+		WHERE doc_group=#{doc_group} AND doc_step > #{doc_step} AND doc_indent > #{doc_indent} AND parent_doc_no=#{doc_no}
+	</select>
+
 	<!-- 조회수 증가 -->
 	<update id="jmhPrjBdDataReadCount" parameterType="PrjBdData">
 		UPDATE PRJ_BD_DATA 
 		SET    BD_COUNT=BD_COUNT+1
-		WHERE  DOC_NO=#{doc_no} AND PROJECT_ID=#{project_id}
+		WHERE  doc_no=#{doc_no} AND project_id=#{project_id}
 	</update>
 	
 	<!-- 추천수 업데이트 -->
 	<update id="jmhPrjBdDataUpdateGoodCount" parameterType="PrjBdData">
 		UPDATE PRJ_BD_DATA 
 		SET    GOOD_COUNT=(SELECT COUNT(*) FROM BD_DATA_GOOD WHERE doc_no=#{doc_no} AND project_id=#{project_id}) 
-		WHERE  DOC_NO=#{doc_no} AND PROJECT_ID=#{project_id}
+		WHERE  doc_no=#{doc_no} AND project_id=#{project_id}
 	</update>
 	
 	<!-- 추천여부 확인-->
@@ -283,21 +297,21 @@
 	<!-- 댓글 삭제 -->
 	<delete id="jmhPrjBdDataDeleteComment" parameterType="BdDataComt">
 		DELETE BD_DATA_COMT 
-		WHERE DOC_NO=#{doc_no} AND PROJECT_ID=#{project_id} AND COMMENT_DOC_NO=#{comment_doc_no}
+		WHERE doc_no=#{doc_no} AND project_id=#{project_id} AND comment_doc_no=#{comment_doc_no}
 	</delete>
 	
 	<!-- 답글 알림플래그 Y처리 -->
 	<update id="jmhPrjBdDataUpdateReplyAlarmFlag" parameterType="PrjBdData">
 		UPDATE PRJ_BD_DATA 
 		SET ALARM_FLAG='Y' 
-		WHERE DOC_NO=#{doc_no} AND PROJECT_ID=#{project_id}
+		WHERE doc_no=#{doc_no} AND project_id=#{project_id}
 	</update>
 
 	<!-- 댓글 알림플래그 Y처리 -->
 	<update id="jmhPrjBdDataUpdateCommentAlarmFlag" parameterType="PrjBdData">
 		UPDATE BD_DATA_COMT 
 		SET ALARM_FLAG='Y' 
-		WHERE DOC_NO=#{doc_no} AND PROJECT_ID=#{project_id}
+		WHERE doc_no=#{doc_no} AND project_id=#{project_id}
 	</update>
 
 </mapper>

@@ -13,6 +13,8 @@ import com.oracle.s202350101.model.BdFreeComt;
 import com.oracle.s202350101.model.BdFreeGood;
 import com.oracle.s202350101.model.BdQna;
 import com.oracle.s202350101.model.BdQnaGood;
+import com.oracle.s202350101.model.Code;
+import com.oracle.s202350101.model.PrjBdData;
 
 import lombok.RequiredArgsConstructor;
 
@@ -297,30 +299,15 @@ public class CyjDaoImpl implements CyjDao {
 		}
 		return count;
 	}
-
-	// 이벤트_댓글리스트
-	@Override
-	public List<BdFreeComt> eventComt(int doc_no) {
-		System.out.println("CyjDaoImpl eventComt Start");
-		
-		List<BdFreeComt> comt = new ArrayList<BdFreeComt>();
-		try {
-			comt = session.selectList("cyEventComt", doc_no);
-			System.out.println("CyjDaoImpl comt-> " + comt);
-		} catch (Exception e) {
-			System.out.println("CyjDaoImpl eventCount Exception-> " + e.getMessage());
-		}
-		return comt;
-	}
 	
-	// 이벤트_댓글입력
+	// 이벤트_댓글입력 
 	@Override
-	public int ajaxComt(BdFreeComt bdFreeComt) {
+	public int comtInsert(BdFreeComt bdFreeComt) {
 		System.out.println("CyjDaoImpl ajaxComt Start");
 		
 		int ajaxInsert = 0;
 		try {
-			ajaxInsert = session.insert("cyAjaxInsert", bdFreeComt);
+			ajaxInsert = session.insert("cyComtInsert", bdFreeComt);
 			System.out.println("CyjDaoImpl ajaxInsert-> " + ajaxInsert);
 		} catch (Exception e) {
 			System.out.println("CyjDaoImpl ajaxComt Exception-> " + e.getMessage());
@@ -328,22 +315,57 @@ public class CyjDaoImpl implements CyjDao {
 		return ajaxInsert;
 	}
 	
-	// 이벤트_입력한 댓글 갖고 오기 
+	// 이벤트_댓글리스트
 	@Override
-	public List<BdFreeComt> eventSelect(BdFreeComt bdFreeComt) {
-		System.out.println("CyjDaoImpl eventSelect Start");
+	public List<BdFreeComt> eventComt(BdFreeComt bdFreeComt) {
+		System.out.println("CyjDaoImpl eventComt Start");
 		
-		List<BdFreeComt> comtSelect = new ArrayList<BdFreeComt>();
+		List<BdFreeComt> comt = new ArrayList<BdFreeComt>();
+		System.out.println("eventComt comt.size()-> " + comt.size());
 		try {
-			comtSelect = session.selectList("cyComtSelect", bdFreeComt);
-			System.out.println("CyjDaoImpl comtSelect-> " + comtSelect);
+			comt = session.selectList("cyEventComt", bdFreeComt);
+			System.out.println("CyjDaoImpl comt-> " + comt);
 		} catch (Exception e) {
-			System.out.println("CyjDaoImpl eventSelect Exception-> " + e.getMessage());
-		}	
-		return comtSelect;
-	
+			System.out.println("CyjDaoImpl eventCount Exception-> " + e.getMessage());
+		}
+		return comt;
 	}
 	
+	// 이벤트_해당 게시글에 대한 댓글 총 갯수
+	@Override
+	public int eventComtCount(int doc_no) {
+		System.out.println("CyjDaoImpl eventComtCount Start");
+		
+		int eventComtCount = 0;
+		try {
+			eventComtCount = session.selectOne("cyEventComtCount", doc_no);
+			System.out.println("CyjDaoImpl eventComtCount-> " + eventComtCount);
+		} catch (Exception e) {
+			System.out.println("CyjDaoImpl eventComtCount Exception-> " + e.getMessage());
+		}
+		return eventComtCount;
+	}
+	
+	// 현재 로그인 사용자가 글작성자인 경우 댓글들 alarm_flag='Y'로 일괄 변경처리
+	@Override
+	public int cyUpdateCommentAlarmFlag(BdFree eventContent) {
+		System.out.println("CyjDaoImpl cyUpdateCommentAlarmFlag Start");
+		
+		int resultCount = 0;
+		try {
+			resultCount = session.update("cyPrjBdDataUpdateCommentAlarmFlag", eventContent);
+			System.out.println("resultCount->"+resultCount);
+			if(resultCount > 0) {
+				// 성공 
+			} else {
+				System.out.println("SQL오류");
+			}
+		} catch (Exception e) {
+			System.out.println("CyjDaoImpl cyUpdateCommentAlarmFlag Exception-> " + e.getMessage());
+		}
+		System.out.println("CyjDaoImpl cyUpdateCommentAlarmFlag End");
+		return resultCount;
+	}
 	
 // ------------------------------------------------------------------------		
 
@@ -480,10 +502,10 @@ public class CyjDaoImpl implements CyjDao {
 
 	// 자유_댓글리스트
 	@Override
-	public List<BdFree> freeComtList(int doc_no) {
+	public List<BdFreeComt> freeComtList(int doc_no) {
 		System.out.println("CyjDaoImpl freeComtList Start");
 		
-		List<BdFree> freeComt = new ArrayList<BdFree>();
+		List<BdFreeComt> freeComt = new ArrayList<BdFreeComt>();
 		try {
 			freeComt = session.selectList("cyFreeComtList", doc_no);
 			System.out.println("CyjDaoImpl freeComt-> " + freeComt);
@@ -491,36 +513,6 @@ public class CyjDaoImpl implements CyjDao {
 			System.out.println("CyjDaoImpl freeComtList Exception-> " + e.getMessage());
 		}
 		return freeComt;
-	}
-	
-	// 자유_댓글 입력
-	@Override
-	public int ajaxFreeComt(BdFreeComt bdFreeComt) {
-		System.out.println("CyjDaoImpl ajaxFreeComt Start");
-		
-		int ajaxFreeComtInsert = 0;
-		try {
-			ajaxFreeComtInsert = session.insert("cyAjaxFreeComtInsert", bdFreeComt);
-			System.out.println("CyjDaoImpl ajaxFreeComtInsert-> " + ajaxFreeComtInsert);
-		} catch (Exception e) {
-			System.out.println("CyjDaoImpl ajaxFreeComt Exception-> " + e.getMessage());
-		}
-		return ajaxFreeComtInsert;
-	}
-
-	// 자유_입력한 댓글 갖고 옴
-	@Override
-	public List<BdFreeComt> freeSelect(BdFreeComt bdFreeComt) {
-		System.out.println("CyjDaoImpl freeSelect Start");
-		
-		List<BdFreeComt> freeComtSelect = new ArrayList<BdFreeComt>();
-		try {
-			freeComtSelect = session.selectList("cyAjaxComtSelect", bdFreeComt);
-			System.out.println("CyjDaoImpl freeComtSelect-> " + freeComtSelect);
-		} catch (Exception e) {
-			System.out.println("CyjDaoImpl freeSelect Exception-> " + e.getMessage());
-		}
-		return freeComtSelect;
 	}
 
 // ------------------------------------------------------------------------	
@@ -561,7 +553,7 @@ public class CyjDaoImpl implements CyjDao {
 
 // ------------------------------------------------------------------------	
 
-	// 자유_삭제
+	// 자유_게시글 삭제
 	@Override
 	public int freeDelete(int doc_no) {
 		System.out.println("CyjDaoImpl freeDelete Start");
@@ -575,13 +567,30 @@ public class CyjDaoImpl implements CyjDao {
 		}
 		return freeDelete;
 	}
-
+	
+// ------------------------------------------------------------------------	
+	
+	// 자유_댓글 삭제
+	@Override
+	public int freeComtDelete(BdFreeComt bdFreeComt) {
+		System.out.println("CyjDaoImpl freeComtDelete Start");
+		
+		int comtDelete = 0;
+		try {
+			comtDelete = session.delete("cyFreeComtDelete", bdFreeComt);
+			System.out.println("CyjDaoImpl comtDelete-> " + comtDelete);
+		} catch (Exception e) {
+			System.out.println("CyjDaoImpl comtDelete Exception-> " + e.getMessage());
+		}
+		return comtDelete;
+	}
+	
 // ------------------------------------------------------------------------	
 // ------------------------- qna 게시판 ------------------------------------
 
-	// qna_총 갯수
+	// qna_전체 count
 	@Override
-	public int qnaTotalCount() {
+	public int qnaSelectCount(BdQna bdQna) {
 		System.out.println("CyjDaoImpl qnaTotalCount Start");
 		
 		int qnaTotalCount = 0;
@@ -594,6 +603,22 @@ public class CyjDaoImpl implements CyjDao {
 		return qnaTotalCount;
 	}
 
+	// qna_검색 건수 가져오기 
+	@Override
+	public int searchCount(BdQna bdQna) {
+		System.out.println("CyjDaoImpl searchCount Start");
+		
+		int searchCount = 0;
+		try {
+			searchCount = session.selectOne("cyQnaSearchCount", bdQna);
+			System.out.println("CyjDaoImpl searchCount-> " + searchCount);
+		} catch (Exception e) {
+			System.out.println("CyjDaoImpl searchCount Exception-> " + e.getMessage());
+		}
+		return searchCount;
+	}
+	
+	
 	// qna_추천수 가장 높은 row 3개
 	@Override
 	public List<BdQna> qnaList() {
@@ -623,27 +648,38 @@ public class CyjDaoImpl implements CyjDao {
 		}
 		return qnaTotalList;
 	}
+	
 
-// ------------------------------------------------------------------------	
-
-	// qna_새 글 입력 
 	@Override
-	public int qnaInsert(@Valid BdQna bdQna) {
-		System.out.println("CyjDaoImpl qnaInsert Start");
+	public List<BdQna> searchList(BdQna bdQna) {
+		System.out.println("CyjDaoImpl searchList Start");
 		
-		if (bdQna.getAttach_name() == null) bdQna.setAttach_name("");
-		if (bdQna.getAttach_path() == null) bdQna.setAttach_path("");		
-		
-		int qnaInsert = 0;
+		List<BdQna> qnaSearchList = null;
 		try {
-			qnaInsert = session.insert("cyQnaInsert", bdQna);
-			System.out.println("CyjDaoImpl qnaInsert-> " + qnaInsert);
+			qnaSearchList = session.selectList("cyQnaSearchList", bdQna);
+			System.out.println("CyjDaoImpl searchList qnaSearchList.size()-> " + qnaSearchList.size());
 		} catch (Exception e) {
-			System.out.println("CyjDaoImpl qnaInsert Exception-> " + e.getMessage());
+			System.out.println("CyjDaoImpl searchList Exception-> " + e.getMessage());
 		}
-		return qnaInsert;
+		return qnaSearchList;
 	}
+	
 
+	// qna_검색 분류 코드 가져오기
+	@Override
+	public List<Code> codeList(Code code) {
+		System.out.println("CyjDaoImpl codeList Start");
+		
+		List<Code> codeList = null;
+		try {
+			codeList = session.selectList("cyCodeListSelect", code);
+			System.out.println("CyjDaoImpl codeList-> " + codeList);
+		} catch (Exception e) {
+			System.out.println("CyjDaoImpl codeList Exception-> " + e.getMessage());
+		}
+		return codeList;
+	}
+	
 // ------------------------------------------------------------------------	
 
 	// qna_상세
@@ -674,6 +710,27 @@ public class CyjDaoImpl implements CyjDao {
 			System.out.println("CyjDaoImpl qnaCount Exception-> " + e.getMessage());
 		}
 		return qnaCount;
+	}
+	
+	// 현재 로그인 사용자가 답글의 부모글 작성자인 경우 답글 조회시 alarm_flag='Y'로 변경처리
+	@Override
+	public int cyUpdateReplyAlarmFlag(BdQna qnaContent) {
+		System.out.println("CyjDaoImpl cyUpdateReplyAlarmFlag Start");
+		
+		int resultCount = 0;
+		try {
+			resultCount = session.update("cyPrjBdDataUpdateReplyAlarmFlag", qnaContent);
+			System.out.println("resultCount->"+resultCount);
+			if(resultCount > 0) {
+				//성공
+			}else {
+				System.out.println("SQL오류");
+			}
+		} catch (Exception e) {
+			System.out.println("CyjDaoImpl cyUpdateReplyAlarmFlag Exception-> " + e.getMessage());
+		}
+		System.out.println("CyjDaoImpl cyUpdateReplyAlarmFlag END...");
+		return resultCount;
 	}
 
 // ------------------------------------------------------------------------	
@@ -755,8 +812,135 @@ public class CyjDaoImpl implements CyjDao {
 		return qnaGoodSelect;
 	}
 	
+// ------------------------------------------------------------------------	
 
-	 
+	// qna_새 글 입력하기 위한 상세 
+	@Override
+	public BdQna selectBdQna(BdQna bdQna) {
+		System.out.println("CyjDaoImpl selectBaQna Start");
+		
+		BdQna selectBdQna = null;
+		try {
+			selectBdQna = session.selectOne("cySelectBdQna", bdQna);
+			System.out.println("CyjDaoImpl selectBdQna-> " + selectBdQna);
+		} catch (Exception e) {
+			System.out.println("CyjDaoImpl selectBdQna Exception-> " + e.getMessage());
+		}
+		return selectBdQna;
+	}
+		
+	// qna_새 글 입력 
+	@Override
+	public int qnaInsert(BdQna bdQna) {
+		System.out.println("CyjDaoImpl qnaInsert Start");
+		
+		if (bdQna.getAttach_name() == null) bdQna.setAttach_name("");
+		if (bdQna.getAttach_path() == null) bdQna.setAttach_path("");		
+		
+		int qnaInsert = 0;
+		try {
+			System.out.println("**2**app_id:"+bdQna.getApp_id());
+			System.out.println("**2**user_id:"+bdQna.getUser_id());
+			System.out.println("**2**subject:"+bdQna.getSubject());
+			System.out.println("**2**doc_body:"+bdQna.getDoc_body());
+			System.out.println("**2**bd_category:"+bdQna.getBd_category());
+			System.out.println("**2**doc_group:"+bdQna.getDoc_group());
+			System.out.println("**2**doc_step:"+bdQna.getDoc_step());
+			System.out.println("**2**doc_indent:"+bdQna.getDoc_indent());
+			System.out.println("**2**parent_doc_user_id:"+bdQna.getParent_doc_user_id());
+			System.out.println("**2**parent_doc_no:"+bdQna.getParent_doc_no());
+
+			qnaInsert = session.insert("cyQnaInsert", bdQna);
+			System.out.println("CyjDaoImpl qnaInsert-> " + qnaInsert);
+		} catch (Exception e) {
+			System.out.println("CyjDaoImpl qnaInsert Exception-> " + e.getMessage());
+		}
+		return qnaInsert;
+	}
+
+// ------------------------------------------------------------------------	
+
+	// qna_답변 순서 조절
+	@Override
+	public int qnaReply(BdQna bdQna) {
+		System.out.println("CyjDaoImpl qnaReply Start");
+		
+		int qnaReply = 0;
+		try {
+			qnaReply = session.update("cyQnaReply", bdQna);
+			System.out.println("CyjDaoImpl qnaReply-> " + qnaReply);
+		} catch (Exception e) {
+			System.out.println("CyjDaoImpl qnaReply Exception-> " + e.getMessage());
+		}
+		return qnaReply;
+	}
+	
+// ------------------------------------------------------------------------	
+
+	// qna_삭제	
+	@Override
+	public int qnaDelete(int doc_no) {
+		System.out.println("CyjDaoImpl qnaDelete Start");
+		
+		int qnaDelete = 0;
+		try {
+			qnaDelete = session.delete("cyQnaDelete", doc_no);
+			System.out.println("CyjDaoImpl qnaDelete-> " + qnaDelete);
+		} catch (Exception e) {
+			System.out.println("CyjDaoImpl qnaDelete Exception-> " + e.getMessage());
+		}
+		return qnaDelete;
+	}
+
+// ------------------------------------------------------------------------	
+
+	// 알림 목록
+	@Override
+	public List<BdQna> alarmList(BdQna bdQna) {
+		System.out.println("CyjDaoImpl alarmList Start");
+		
+		List<BdQna> qnaAlarmList = null;
+		try {
+			qnaAlarmList = session.selectList("cyQnaAlarmList", bdQna);
+			if(qnaAlarmList != null) {
+				System.out.println("JmhDaoImpl alarmList qnaAlarmList.get(0).getSubject()-> " +  (qnaAlarmList.get(0)).getSubject());
+			}else {
+				System.out.println("SQL오류");
+			}
+		} catch (Exception e) {
+			System.out.println("CyjDaoImpl alarmList Exception-> " + e.getMessage());
+		}
+		return qnaAlarmList;
+	}
+	
+// ------------------------------------------------------------------------	
+
+	// 답글 목록 열때 count
+	@Override
+	public int alarmCount(BdQna bdQna) {
+		System.out.println("CyjDaoImpl alarmCount Start");
+		
+		int alarmCnt = 0;				
+		try {
+			//--------------------------------------------------------------------
+			alarmCnt = session.selectOne("cyPrjBdDataListAlarmCount", bdQna);
+			//--------------------------------------------------------------------
+			System.out.println("CyjDaoImpl alarmCount alarmCnt-> " + alarmCnt);
+		} catch (Exception e) {
+			System.out.println("CyjDaoImpl alarmCount Exception->"+e.getMessage());
+		}
+		System.out.println("CyjDaoImpl alarmCount END...");
+		return alarmCnt;
+	}
+
+
+
+
+	
+
+
+
+
 
 
 

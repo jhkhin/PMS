@@ -12,7 +12,7 @@
 
 <!--CSS START -->
 <style type="text/css">
-		.error {color: red}
+	.error {color: red}
 </style>
 <!-- CSS END -->
 
@@ -72,11 +72,24 @@
 				String strDate = simpleDateFormat.format(date);
 			%>
 			
-			<h3>새 글 작성</h3>
+			<h4 class ="pt-4">작성</h4>
 
 				<form:form action="board_write_insert" method="post" modelAttribute="bdFree" class="mt-3" enctype="multipart/form-data">
-				<table class="table table-bordered">
-			        <tr>
+
+				<table width="100%" style="margin-top:7px">
+					<tr>
+						<td style="text-align:right">
+							<button type="submit" class="btn btn-dark btn-sm">등록</button>
+							<button type="button" class="btn btn-dark btn-sm" onclick="closeDoc()">닫기</button>
+						</td>
+					</tr>
+				</table>
+				<table class="table">
+				<colgroup>
+					<col width="15%"></col>
+					<col width="85%"></col>
+				</colgroup>
+				    <tr>
 			            <th>작성일</th>
 			            <td><%=strDate %></td>
 			        </tr>
@@ -89,7 +102,7 @@
 			        <tr>
 			            <th>제목</th>
 			            <td>
-			                <input type="text" name="subject" class="form-control">
+			                <input type="text" name="subject" class="form-control"> 
 			                <form:errors path="subject" class="error"/>
 			            </td>
 			        </tr>
@@ -97,7 +110,7 @@
 			        <tr>
 			            <th>본문</th>
 			            <td>
-			                <input type="text" name="doc_body" class="form-control">
+			           		<textarea  cols="50"  rows="10"    name="doc_body" class="form-control"></textarea>
 			                <form:errors path="doc_body" class="error"/>
 			            </td>
 			        </tr>
@@ -106,15 +119,9 @@
 			            <th>첨부파일</th>
 			            <td>
 			                <div class="custom-file">
-			                    <input type="file" class="custom-file-input" id="file" name="file1">
+			                    <input type="file" class="form-control form-control-sm" id="file" name="file1">
 			                    <label class="custom-file-label" for="file"></label>
 			                </div>
-			            </td>
-			        </tr>
-			
-			        <tr>
-			            <td colspan="2">
-			                <input type="submit" value="등록" class="btn btn-primary">
 			            </td>
 			        </tr>
 			    </table>

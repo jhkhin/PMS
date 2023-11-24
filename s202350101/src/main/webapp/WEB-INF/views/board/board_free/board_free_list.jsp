@@ -9,19 +9,6 @@
 
 <!--CSS START -->
 <style type="text/css">
-		table {
-		width: 100%;
-		margin-top: 10px;
-	}
-	
-	.title {
-		width: 350px;
-	}
-	
-	td, th, tr {
-		padding: 10px;	
-	}
-	
 	.pagebox {
 		margin-top: 10px;
 		text-align: center;
@@ -58,9 +45,7 @@
 	            $('#footer').html(data);
 	        }
 	    });
-	    
-
-	    
+  
 	    
 	});
 
@@ -82,74 +67,128 @@
 		<!-- 본문 -->
 		<main id="center" class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
 			<!------------------------------ //개발자 소스 입력 START ------------------------------->
-
-			<h3>자유 게시판</h3><p>
-			<input type="button" value="새 글 작성" onclick="location.href='free_insert_from'">
-			
-			
-			<!-- 추천수 가장 높은 row 3개 -->
-			<h5>추천수 가장 높은 게시글</h5>
-	 		<table border="1">
-	 			<tr>
-	 				<th>번호</th>      <th>이름</th>       <th>작성일시</th> 
-					<th>수정일시</th>   <th>게시종류</th>     <th>제목</th>      
-					<th>조회수</th>     <th>추천</th>
-	 			</tr>
-	 			
-	 			<c:forEach var="free" items="${freeRow}" varStatus="status"> 
-	 				<tr id="freeRow${free.rn }">
-	 					<td>${free.rn }</td>
-	 					<td>${free.user_name }</td>
-	 					<td>${free.create_date }</td>
-	 					<td>${free.modify_date }</td>
-	 					<td>${free.bd_category }</td>
-	 					<td><a href="free_content?doc_no=${free.doc_no}">${free.subject }</a></td>
-	 					<td>${free.bd_count }</td>
-	 					<td>${free.good_count }</td>
-	 				</tr>
-	 			</c:forEach>
-			</table>
-			
-			
-			<!-- 전체 리스트 -->
-			<h5>All Count : ${freeTotal} </h5>
-			<table border="1"> 
-				<tr>
-					<th>번호</th>      <th>이름</th>       <th>작성일시</th> 
-					<th>수정일시</th>   <th>게시종류</th>     <th>제목</th>      
-					<th>조회수</th>     <th>추천</th>	
-				</tr> 
-				
-				<c:forEach var="list" items="${freeList }" varStatus="status">
-					<tr id="bdFree${status.count }"> 
-						<td>${status.count}</td> 
-						<td>${list.user_name}</td>     
-					    <td>${list.create_date}</td> 
-						<td>${list.modify_date}</td>  
-						<td>${list.bd_category}</td>
-						<td><a href="free_content?doc_no=${list.doc_no}">${list.subject}</a></td>
-					    <td>${list.bd_count}</td>     
-					    <td>${list.good_count}</td> 
-					</tr>
-				</c:forEach>
-			</table>
-			
-			
-			<!-- 페이징 작업 -->
-			<div class="pagebox">
-				<c:if test="${page.startPage > page.pageBlock }">
-					<a href="board_notify?currentPage=${page.startPage - page.pageBlock }">[이전]</a>
-				</c:if>
-				
-				<c:forEach var="a" begin="${page.startPage }" end="${page.endPage }">
-					<a href="board_notify?currentPage=${a }">[${a }]</a>
-				</c:forEach>
-				
-				<c:if test="${page.endPage < page.totalPage }">
-					<a href="board_notify?currentPage=${page.startPage + page.pageBlock }">[다음]</a>
-				</c:if>
+			<svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+			  <symbol id="house-door-fill" viewBox="0 0 16 16">
+			    <path d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5z"></path>
+			  </symbol>
+			</svg>		
+			<nav aria-label="breadcrumb" style="padding-top:5px;padding-left: calc(var(--bs-gutter-x) * 0.5);">
+			    <ol class="breadcrumb breadcrumb-chevron p-1">
+			      <li class="breadcrumb-item">
+			        <a class="link-body-emphasis" href="/main">
+			          <svg class="bi" width="16" height="16"><use xlink:href="#house-door-fill"></use></svg>
+			          <span class="visually-hidden">Home</span>
+			        </a>
+			      </li>
+			      <li class="breadcrumb-item">
+			        <a class="link-body-emphasis fw-semibold text-decoration-none" href="">전체 게시판</a>
+			      </li>
+			      <li class="breadcrumb-item active" aria-current="page">자유 게시판</li>
+			    </ol>
+			</nav>
+			<div class="container-fluid">
+				<div style="margin-top:15px;height:45px">
+					<span class="apptitle">자유 게시판</span>
+				</div>
 			</div>
-			
+		
+			<div class="container-fluid">
+				<input type="button" class="btn btn-dark btn-sm" value="작성" onclick="location.href='free_insert_from'">
+				
+				
+				<!-- 추천수 가장 높은 row 3개 -->
+				<div style="text-align:center;"><h6><b><추천 게시글></b></h6></div>
+		 		<table class="table">
+			 		<colgroup>
+						<col width="5%"></col><col width="10%"></col><col width="37%"></col><col width="12%"></col>
+						<col width="10%"></col><col width="12%"></col><col width="7%"></col><col width="7%"></col>
+					</colgroup>	
+					<thead class="table-light">
+		 			<tr>
+	 					<th>번호</th><th>게시종류</th><th>제목</th><th>이름</th>       
+					    <th>작성일</th><th>수정일</th><th>조회</th><th>추천</th>
+		 			</tr>
+		 			</thead>
+		 			<tbody>
+		 			<c:forEach var="free" items="${freeRow}" varStatus="status"> 
+		 				<tr id="free${status.count}">
+		 					<td>${status.count}</td>
+		 					<td>${free.bd_category }</td>
+		 					<td><a href="free_content?doc_no=${free.doc_no}">${free.subject }</a></td>
+		 					<td>
+		 						${free.user_name }
+								<span class="iconChat">
+									<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-chat-text" viewBox="0 0 16 16">
+										<path d="M2.678 11.894a1 1 0 0 1 .287.801 10.97 10.97 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8.06 8.06 0 0 0 8 14c3.996 0 7-2.807 7-6 0-3.192-3.004-6-7-6S1 4.808 1 8c0 1.468.617 2.83 1.678 3.894zm-.493 3.905a21.682 21.682 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a9.68 9.68 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105z"/>
+										<path d="M4 5.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zM4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8zm0 2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5z"/>
+									</svg>
+									<input type="hidden" name="chat_id" value="${free.user_id}">
+								</span>
+		 					</td>
+		 					<td>${free.create_date }</td>
+		 					<td>${free.modify_date }</td>
+		 					<td>${free.bd_count }</td>
+		 					<td>${free.good_count }</td>
+		 				</tr>
+		 			</c:forEach>
+		 			</tbody>
+				</table>
+				
+				
+				<!-- 전체 리스트 -->
+				<h6 class="mt-5 pt-3" style="text-align:right">총 건수 : ${freeTotal} </h6>
+				<table class="table">
+			 		<colgroup>
+						<col width="5%"></col><col width="10%"></col><col width="37%"></col><col width="12%"></col>
+						<col width="10%"></col><col width="12%"></col><col width="7%"></col><col width="7%"></col>
+					</colgroup>	
+					<thead class="table-light">
+					<tr>
+	 					<th>번호</th><th>게시종류</th><th>제목</th><th>이름</th>       
+					    <th>작성일</th><th>수정일</th><th>조회</th><th>추천</th>
+					</tr> 
+					</thead>
+					<tbody>
+					<c:forEach var="list" items="${freeList }" varStatus="status">
+						<tr id="bdFree${status.count }"> 
+							<td>${status.count}</td> 
+							<td>${list.bd_category}</td>
+							<td><a href="free_content?doc_no=${list.doc_no}">${list.subject}</a></td>
+							<td>
+								${list.user_name}
+								<span class="iconChat">
+									<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-chat-text" viewBox="0 0 16 16">
+										<path d="M2.678 11.894a1 1 0 0 1 .287.801 10.97 10.97 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8.06 8.06 0 0 0 8 14c3.996 0 7-2.807 7-6 0-3.192-3.004-6-7-6S1 4.808 1 8c0 1.468.617 2.83 1.678 3.894zm-.493 3.905a21.682 21.682 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a9.68 9.68 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105z"/>
+										<path d="M4 5.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zM4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8zm0 2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5z"/>
+									</svg>
+									<input type="hidden" name="chat_id" value="${list.user_id}">
+								</span>
+							</td>     
+						    <td>${list.create_date}</td> 
+							<td>${list.modify_date}</td>  
+						    <td>${list.bd_count}</td>     
+						    <td>${list.good_count}</td> 
+						</tr>
+					</c:forEach>
+					</tbody>
+				</table>
+				
+				
+				<!-- 페이징 작업 -->
+				<div class="pagebox">
+					<c:if test="${page.startPage > page.pageBlock }">
+						<a href="board_notify?currentPage=${page.startPage - page.pageBlock }">[이전]</a>
+					</c:if>
+					
+					<c:forEach var="a" begin="${page.startPage }" end="${page.endPage }">
+						<a href="board_notify?currentPage=${a }">[${a }]</a>
+					</c:forEach>
+					
+					<c:if test="${page.endPage < page.totalPage }">
+						<a href="board_notify?currentPage=${page.startPage + page.pageBlock }">[다음]</a>
+					</c:if>
+				</div>
+			</div>
 		
 	  		<!------------------------------ //개발자 소스 입력 END ------------------------------->
 		</main>		

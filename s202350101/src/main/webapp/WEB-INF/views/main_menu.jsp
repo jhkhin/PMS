@@ -1,74 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <style>
-#menubar {
-	max-width: 280px;
-}
-.project-title {
-	padding-left: 30px;
-	color: #fdb933;
-	font-weight: bold;
-}
-.menu-title{
-	padding-left: 30px;
-	color: #000000;
-	font-weight: bold;
-	
-	border:0px;
-	/* background-color: #e2e3e5; */
-	border-radius: 5px;
-	padding: 5px 5px 5px 10px;
-	margin: 5px 5px 5px 20px;
-	width: 222px;
-	list-style-type: none; /* 불릿 제거 */
-	list-style-position: inside;  /* 들여쓰기 */
-}
-	.menu-title:hover {
-		background-color: #fff1eb;
-	}
-	.menu-title a:link {
-		text-decoration: none;
-		color: #212529;
-	}
-	.menu-title a:hover {
-		color: #212529;
-	}
-	.menu-title a:active {
-		color: #212529;
-	}
-	.menu-title a:visited {
-		color: #212529;
-	} 
-
-.menu-box {
-	border:0px;
-	background-color: #ffffff;
-	border-radius: 5px;
-	padding: 3px 3px 3px 10px;
-	margin: 5px;
-	width: 200px;
-	list-style-type: none; /* 불릿 제거 */
-	/* list-style-type: square  네모모양 */
-	list-style-position: inside;  /* 들여쓰기 */
-}
-	.menu-box:hover {
-		background-color: #fff1eb;
-	}
-	.menu-box a:link {
-		text-decoration: none;
-		color: #212529;
-	}
-	.menu-box a:hover {
-		color: #212529;
-	}
-	.menu-box a:active {
-		color: #212529;
-	}
-	.menu-box a:visited {
-		color: #212529;
-	}
 </style>
- 
+
 <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
   <symbol id="bootstrap" viewBox="0 0 118 94">
     <title>Bootstrap</title>
@@ -92,14 +26,14 @@
     <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zM2.5 2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm6.5.5A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zM1 10.5A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm6.5.5A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3z"></path>
   </symbol>
 </svg>
-<div class="flex-shrink-0 p-3" style="width: 280px;">
+<div class="flex-shrink-0 p-3">
     <ul class="list-unstyled ps-0">
       <li class="mb-1">
         <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#mypost-collapse" aria-expanded="true">
 		내 글 모음
         </button>
         <div class="collapse show" id="mypost-collapse">
-          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1">
             <li><a href="mypost_board_list" class="link-body-emphasis d-inline-flex text-decoration-none rounded">내가 쓴 게시글</a></li>
             <li><a href="mypost_comment_list" class="link-body-emphasis d-inline-flex text-decoration-none rounded">내가 쓴 댓글</a></li>
             <li><a href="mypost_good_list" class="link-body-emphasis d-inline-flex text-decoration-none rounded">내가 추천한 게시글</a></li>
@@ -108,7 +42,7 @@
       </li>
       <li class="mb-1">
         <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#todolist-collapse" aria-expanded="false">
-		<span onclick="goto('todolist')" style="cursor:pointer">오늘 할 일</span>
+		<span onclick="goto('todo_list')" style="cursor:pointer">오늘 할 일</span>
         </button>
       </li>
       <li class="mb-1">
@@ -116,13 +50,21 @@
 		프로젝트
         </button>
         <div class="collapse show" id="project-collapse">
-          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1">
             <li><a href="prj_mgr_req_create" class="link-body-emphasis d-inline-flex text-decoration-none rounded">프로젝트 생성</a></li>
             <li><a href="prj_mgr_step_list" class="link-body-emphasis d-inline-flex text-decoration-none rounded">프로젝트 단계 프로파일</a></li>
-            <li><a href="dashboard" class="link-body-emphasis d-inline-flex text-decoration-none rounded"><svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#home"></use></svg>프로젝트 Home</a></li>
-            <li><a href="task_list" class="link-body-emphasis d-inline-flex text-decoration-none rounded"><img src="/common/images/icon_board.png" width="16" height="14" style="margin-top:2px;margin-right:8px">작업 목록</a></li>
-            <li><a href="task_board" class="link-body-emphasis d-inline-flex text-decoration-none rounded"><svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#grid"></use></svg>작업 보드</a></li>
-            <li><a href="task_timeline" class="link-body-emphasis d-inline-flex text-decoration-none rounded"><svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>타임 라인</a></li>
+            <li><a href="prj_home" class="link-body-emphasis d-inline-flex text-decoration-none rounded"><svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#home"></use></svg>프로젝트 Home</a></li>
+            <li>
+            	<a href="task_list" class="link-body-emphasis d-inline-flex text-decoration-none rounded"><img src="/common/images/icon_board.png" width="16" height="14" style="margin-top:2px;margin-right:8px">작업 목록</a>
+            	<span style="margin-left:10px;cursor:pointer" onclick="goto('garbage_list')">
+            		<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+					  <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"></path>
+					  <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"></path>
+					</svg>
+            	</span>
+            </li>
+            <li><a href="dashboard" class="link-body-emphasis d-inline-flex text-decoration-none rounded"><svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#grid"></use></svg>작업 보드</a></li>
+            <li><a href="task_timeline" class="link-body-emphasis d-inline-flex text-decoration-none rounded"><svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>작업 타임 라인</a></li>
             <li><a href="prj_calendar" class="link-body-emphasis d-inline-flex text-decoration-none rounded"><svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#table"></use></svg>프로젝트 캘린더</a></li>
             <li><a href="prj_board_data_list" class="link-body-emphasis d-inline-flex text-decoration-none rounded"><svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#grid"></use></svg>공지/자료</a></li>
             <li><a href="prj_meeting_calendar" class="link-body-emphasis d-inline-flex text-decoration-none rounded"><svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#people-circle"></use></svg>회의록</a></li>
@@ -140,7 +82,7 @@
 		전체 게시판
         </button>
         <div class="collapse show" id="board-collapse">
-          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1">
             <li><a href="board_notify" class="link-body-emphasis d-inline-flex text-decoration-none rounded">전체 공지사항</a></li>
             <li><a href="board_event" class="link-body-emphasis d-inline-flex text-decoration-none rounded">이벤트</a></li>
             <li><a href="board_qna" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Q&A 게시판</a></li>
@@ -148,13 +90,13 @@
           </ul>
         </div>
       </li>
-      <li class="border-top my-3"></li>
+      <hr>
       <li class="mb-1">
         <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#admin-collapse" aria-expanded="true">
-		관리자 페이지
+		관리자 설정
         </button>
         <div class="collapse show" id="admin-collapse">
-          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1">
             <li><a href="admin_projectmanager" class="link-body-emphasis d-inline-flex text-decoration-none rounded">팀장 권한 설정</a></li>
             <li><a href="admin_board" class="link-body-emphasis d-inline-flex text-decoration-none rounded">게시판 관리</a></li>
             <li><a href="admin_approval" class="link-body-emphasis d-inline-flex text-decoration-none rounded">프로젝트 관리</a></li>

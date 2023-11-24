@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,20 +49,10 @@ public class HijController {
 	// 프로젝트 승인신청
 	@GetMapping("/admin_approval")
 	public String admin_approval(PrjInfo prjInfo, String currentPage,  Model model, HttpServletRequest request) {
-		log.info("HijController approval Start");
-		
-		// UserInfo에서 project_id 들고 오기
-//	    UserInfo userInfoDTO = (UserInfo) request.getSession().getAttribute("userInfo");
-//	    String user_id = userInfoDTO.getUser_id();
-//	    if(!userInfoDTO.getUser_auth().equals("manager")){
-//	    	return "";
-//	    }
-		
-		
+		System.out.println("HijController approval Start");
 		//-------------------------------------------------
 		int totalCount = hs.totalCount(); // Prj_info 전체 목록 리스트 갯수
 		//-------------------------------------------------
-		
 		Paging page = new Paging(totalCount, currentPage);
 		prjInfo.setStart(page.getStart());
 		prjInfo.setEnd(page.getEnd());
@@ -133,7 +124,7 @@ public class HijController {
 		int createResult = hs.reqCreate(prjInfo);
 		//-------------------------------------------------
 		System.out.println("test11111 -> " + createResult);
-		if(createResult > 0) return "/main";
+		if(createResult > 0) return "/main"; //createResult 성공시 main
 		return "forword:prj_mgr_req_create";
 	}
 //--------------------------------------------------------------------------------------	
@@ -150,6 +141,7 @@ public class HijController {
 	      
 		System.out.println("request userInfo prj_mgr_step_list->"+ userInfoDTO.getProject_id());
 		
+		// project_id =0 에 prj_step 기본설정을 넣어놔서 조건 걸어줌
 		if(project_id > 0) {
 			//-------------------------------------------------
 			List<PrjMemList> listMember = hs.listMember(project_id);	// 멤버조회
@@ -194,6 +186,7 @@ public class HijController {
 		int prjStatus = hs.prjStatus(prjInfo);
 		//-------------------------------------------------
 		System.out.println("prjStatus : " +prjStatus );
+		// prj_mgr_step_list의 prj_start(), prj_end() AJAX Call
 		if(prjStatus > 0) {
 			resultStatus = "success";
 		}else {
@@ -207,21 +200,21 @@ public class HijController {
 //--------------------------------------------------------------------------------------		
 	// 프로젝트 정보 수정 조회
 	@GetMapping(value = "prj_mgr_req_edit")
-	public String prjMgrReqEdit(Model model, MultipartFile file1, HttpServletRequest request) {
+	public String prjMgrReqEdit(PrjInfo prjInfo, Model model, MultipartFile file1, HttpServletRequest request) {
 		
 		// UserInfo에서 project_id 들고 오기
 	    UserInfo userInfoDTO = (UserInfo) request.getSession().getAttribute("userInfo");
-	    int project_id = userInfoDTO.getProject_id();
-	    String user_id = userInfoDTO.getUser_id();
+	    
+	    int project_id = prjInfo.getProject_id();
 	    
 		System.out.println("HijController prjMgrReqEdit Start");
-		//-------------------------------------------------
-		List<PrjMemList> listMember = hs.listMember(project_id);	// 프로젝트 멤버 리스트
-		//-------------------------------------------------
-		List<UserInfo> listName = hs.listName(user_id);			 	// user_id랑 같은 class_id를 가진학생 리스트
-		//-------------------------------------------------
-		PrjInfo prjInfo = hs.listStep(project_id); 					// 프로젝트 조회 
-		//-------------------------------------------------
+		//------------------------------------------------------------------
+		List<PrjMemList> listMember = hs.listMember(project_id);		// 프로젝트 멤버 리스트
+		//------------------------------------------------------------------
+		prjInfo = hs.listStep(project_id); 										// 프로젝트 조회 
+		//------------------------------------------------------------------
+		List<UserInfo> listName = hs.listName(prjInfo.getProject_manager_id());	// 팀장ID(project_manager_id)랑 같은 class_id를 가진학생 리스트
+		//------------------------------------------------------------------
 		
 		model.addAttribute("listMember", listMember);
 		model.addAttribute("listName", listName);
@@ -229,6 +222,7 @@ public class HijController {
 		model.addAttribute("userInfoDTO", userInfoDTO);
 		return "/project/manager/prj_mgr_req_edit";
 	}
+	
 //--------------------------------------------------------------------------------------		
 	// 프로젝트 정보 수정 수행
 	@PostMapping(value = "req_edit")
@@ -236,19 +230,24 @@ public class HijController {
 		System.out.println("HijController req_edit Start");
 		System.out.println("★prjInfo.getMember_user_id() ---> : " + prjInfo.getMember_user_id());
 		
+		// 파일 업로드 경로 설정
 		String uploadPath = request.getSession().getServletContext().getRealPath("/upload/");
 		
+		// 이전 설정된 첨부파일 삭제 플래그 설정 및 그 경로 가져오기
 		String before_attach_delete_flag = prjInfo.getAttach_delete_flag();
 		String before_attach_path = prjInfo.getAttach_path();
 		
 		System.out.println("before_attach_delete_flag->"+before_attach_delete_flag);
 		System.out.println("before_attach_path->"+before_attach_path);
 		
+		// 이전 첨부파일을 삭제해야 되는 경우와 파일 경로가 비어있지 않은 경우 빈문자열로 삭제처리
 		if(before_attach_delete_flag.equals("D") && !before_attach_path.isEmpty()) {
 			prjInfo.setAttach_name("");
 			prjInfo.setAttach_path("");
 		}
 		System.out.println("file1.getSize() : " +file1.getSize());
+		
+		// 전송된 파일이 있는 경우
 		if(file1.getSize()>0) {
 			
 			System.out.println("FileUpload START...");
@@ -258,16 +257,18 @@ public class HijController {
 			log.info("contentType: " 	+ file1.getContentType());
 			
 			System.out.println("file1.getSize() 안:" +file1.getSize());
+			
+			// 파일을 업로드하고 저장된 파일명을 받아옴
 			//----------------------------------------------------------------------------------------
 			String savedName = hijUploadFile(file1.getOriginalFilename(), file1.getBytes(), uploadPath);
-			log.info("savedName: " 	+ savedName);
 			//----------------------------------------------------------------------------------------
+			log.info("savedName: " 	+ savedName);
 			prjInfo.setAttach_name(file1.getOriginalFilename());
 			prjInfo.setAttach_path(savedName);
 	
 		}
 		//-------------------------------------------------
-		int editResult = hs.reqEdit(prjInfo);
+		int editResult = hs.reqEdit(prjInfo); //프로젝트 정보 업데이트
 		//-------------------------------------------------
 		
 		if(editResult > 0) {
@@ -275,7 +276,7 @@ public class HijController {
 				//수정이 정상수행 되었을때 기존파일 삭제처리
 				String deleteFile = uploadPath + before_attach_path;
 				
-				int delResult = hijUpFileDelete(deleteFile);
+				int delResult = hijUpFileDelete(deleteFile); //이전파일 삭제 작업
 				log.info("deleteFile: " + deleteFile);
 			}
 			model.addAttribute("prjInfo", prjInfo);
@@ -302,36 +303,34 @@ public class HijController {
 				System.out.println("업로드용 폴더 생성: "+uploadPath);
 			}
 			
+			// 저장될 파일명 설정
 			String savedName = uid.toString() + "_" + originalName;
-			
 			log.info("savedName: "+savedName);
-			
+			// 실제 파일의 객체 (저장될경로 + 파일명)
 			File target = new File(uploadPath, savedName);
-			
-			// File target = new File(requestPath, savedName);
-			// File UpLoad ----> uploadPath / UUID+_+originalName
-			
+						
 			//실제 업로드 순간
 			FileCopyUtils.copy(fileData, target); //org.springframework.util.FileCopyUtils
 				
 			return savedName;
 		}
 //--------------------------------------------------------------------------------------
-		//파일추가
+		//파일삭제
 		@RequestMapping(value="hijUploadFileDelete", method = RequestMethod.GET)
 		public String hijUploadFileDelete(String attach_path, HttpServletRequest request, Model model) 
 				throws Exception {
 			
-			String uploadPath = request.getSession().getServletContext().getRealPath("/upload/");
-			String deleteFile = uploadPath + attach_path;
+			String uploadPath = request.getSession().getServletContext().getRealPath("/upload/"); //업로드된 파일이 저장된 경로 가져옴
+			String deleteFile = uploadPath + attach_path; // 삭제할 파일의 전체 경로 설정
 			
 			log.info("deleteFile: " + deleteFile);
 			System.out.println("uploadFileDelete GET Start");
 			
-			int delResult = hijUpFileDelete(deleteFile);
+			int delResult = hijUpFileDelete(deleteFile); //파일 삭제
 			
 			log.info("deleteFile result-> "+delResult);
 			
+			// 삭제된 파일 결과를 model에 저장
 			model.addAttribute("deleteFile", deleteFile);
 			model.addAttribute("delResult", delResult);
 			
@@ -339,7 +338,7 @@ public class HijController {
 			
 		}
 //--------------------------------------------------------------------------------------	
-		//파일추가
+		//파일삭제 로직
 		private int hijUpFileDelete(String deleteFileName) throws Exception {
 			int result = 0;
 			
@@ -347,10 +346,10 @@ public class HijController {
 			
 			File file = new File(deleteFileName);
 			
+			// 파일 존재하는경우
 			if(file.exists()) {
-				
+				// 파일 삭제 
 				if(file.delete()) {
-					
 					System.out.println("파일삭제 성공");
 					result = 1;
 				}
@@ -359,6 +358,7 @@ public class HijController {
 					result = 0;
 				}
 			}
+			// 파일 존재하지 않을 때 
 			else {
 				System.out.println("삭제할 파일이 존재하지 않습니다.");
 				result = -1;

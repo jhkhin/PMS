@@ -63,34 +63,92 @@
 		<!-- 본문 -->
 		<main id="center" class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
 			<!------------------------------ //개발자 소스 입력 START ------------------------------->
-	  		<div id="test">
-                <div id="admin_page_list">
-	                <div class="btn btn-primary" onclick="location.href='/admin_class_list'">내가 쓴 전체 게시글</div>
-                    <!-- <div class="btn btn-secondary" onclick="location.href='/admin_projectmanager'">내가 쓴 Q&A 게시글</div>
-                    <div class="btn btn-secondary" onclick="location.href='/admin_board'">내가 쓴 공용 게시글</div>
-                    <div class="btn btn-secondary" onclick="location.href='/admin_approval'">내가 쓴 PJ& 공지자료 게시글</div>
-                    <div class="btn btn-secondary" onclick="location.href='/admin_add_class'">내가 쓴 업무보고 게시글</div> -->
-                </div>
+			<svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+			  <symbol id="house-door-fill" viewBox="0 0 16 16">
+			    <path d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5z"></path>
+			  </symbol>
+			</svg>		
+			<nav aria-label="breadcrumb" style="padding-top:5px;padding-left: calc(var(--bs-gutter-x) * 0.5);">
+			    <ol class="breadcrumb breadcrumb-chevron p-1">
+			      <li class="breadcrumb-item">
+			        <a class="link-body-emphasis" href="/main">
+			          <svg class="bi" width="16" height="16"><use xlink:href="#house-door-fill"></use></svg>
+			          <span class="visually-hidden">Home</span>
+			        </a>
+			      </li>
+			      <li class="breadcrumb-item">
+			        <a class="link-body-emphasis fw-semibold text-decoration-none" href="">내 글 모음</a>
+			      </li>
+			      <li class="breadcrumb-item active" aria-current="page">내가 쓴 게시글</li>
+			    </ol>
+			</nav>
+			
+	  		<div class="container-fluid">
+                <table width="100%" style="height:45px">
+					<tr>
+						<td style="vertical-align:top"><span class="apptitle">내가 쓴 게시글</span></td>
+						<td align="right">
+							<form action="mypost_board_list">
+								<table>
+									<tr>
+										<td>
+											<select class="form-select" name="search" style="font-size:0.8rem">
+												<c:forEach var="code" items="${search_codelist}">
+													<option value="${code.cate_code}">${code.cate_name}</option>
+												</c:forEach>
+											</select>
+										</td>
+										<td><input type="text" class="form-control me-2" style="font-size:0.8rem" name="keyword" placeholder="검색어를 입력하세요" required="required"></td>
+										<td>
+											<button type="submit" class="btn btn-dark btn-sm">검색</button>
+											<button type="button" class="btn btn-outline-secondary btn-sm" onclick="goto('mypost_board_list')" style="cursor:pointer">
+							         			<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+													<path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"></path>
+													<path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"></path>
+												</svg>
+											</button>
+										</td>
+									</tr>
+								</table>
+							</form>	
+						</td>
+					</tr>
+				</table>						
+				<table width="100%">
+					<tr>
+						<td width="*" style="text-align:right">
+							<c:if test="${not empty keyword}">								
+								<a href="mypost_board_list"><img src="/common/images/btn_icon_delete2.png" width="18" height="19" style="vertical-align:bottom"></a> 
+								검색어( <c:forEach var="code" items="${search_codelist}"><c:if test="${code.cate_code == search}">${code.cate_name}</c:if></c:forEach> = ${keyword} ) 
+								<img src="/common/images/icon_search.png" width="14" height="14" style="vertical-align:bottom"> 검색 건수
+							</c:if>
+							<c:if test="${keyword eq null}">총 건수</c:if>
+							 : ${totalBDCount}
+						</td>
+					</tr>
+				</table>
 
                 <table class="table">
-                    <thead>
-                    <tr class="table-warning">
-                        <td>게시판</td>
-						<td>제목</td>
-						<td>작성자</td>
-						<td>작성일</td>
-						<td>조회수</td>
-						<td>추천수</td>
+                    <thead class="table-light">
+                    <tr>
+                        <th>게시판</th>
+						<th>제목</th>
+						<th>작성자</th>
+						<th>작성일</th>
+						<th>조회수</th>
+						<th>추천수</th>
                     </tr>
+                    </thead>
+                    <tbody>
                     <c:forEach var="sAll" items="${selectAll }">
                     	<c:choose>
 							<c:when test="${sAll.app_id == 1}">
 								<c:if test="${sAll.bd_category == '공지'}">
 									<tr>
 										<td>${sAll.bd_category }</td>
-										<td><a href="board_content?doc_no=${sAll.doc_no }">${sAll.subject }</a></td>
-										<td>${sAll.user_id }</td>
-										<td>${sAll.create_date }</td>
+										<td><a href="javascript:popup('board_notify_read?doc_no=${sAll.doc_no }')">${sAll.subject }</a></td>
+										<td>${sAll.user_name }</td>
+										<td><fmt:formatDate value="${sAll.create_date}" type="date" pattern="yyyy-MM-dd"/></td>
 										<td>${sAll.bd_count }</td>
 										<td>${sAll.good_count }</td>
 									</tr>
@@ -98,9 +156,9 @@
 								<c:if test="${sAll.bd_category == '자유'}">
 									<tr>
 										<td>${sAll.bd_category }</td>
-										<td><a href="free_content?doc_no=${sAll.doc_no }">${sAll.subject }</a></td>
-										<td>${sAll.user_id }</td>
-										<td>${sAll.create_date }</td>
+										<td><a href="javascript:popup('board_free_read?doc_no=${sAll.doc_no }')">${sAll.subject }</a></td>
+										<td>${sAll.user_name }</td>
+										<td><fmt:formatDate value="${sAll.create_date}" type="date" pattern="yyyy-MM-dd"/></td>
 										<td>${sAll.bd_count }</td>
 										<td>${sAll.good_count }</td>
 									</tr>
@@ -108,9 +166,9 @@
 								<c:if test="${sAll.bd_category == '이벤트'}">
 									<tr>
 										<td>${sAll.bd_category }</td>
-										<td><a href="event_content?doc_no=${sAll.doc_no }">${sAll.subject }</a></td>
-										<td>${sAll.user_id }</td>
-										<td>${sAll.create_date }</td>
+										<td><a href="javascript:popup('board_event_read?doc_no=${sAll.doc_no }')">${sAll.subject }</a></td>
+										<td>${sAll.user_name }</td>
+										<td><fmt:formatDate value="${sAll.create_date}" type="date" pattern="yyyy-MM-dd"/></td>
 										<td>${sAll.bd_count }</td>
 										<td>${sAll.good_count }</td>
 									</tr>
@@ -119,9 +177,9 @@
 							<c:when test="${sAll.app_id == 2}">
 								<tr>
 									<td>${sAll.app_name }</td>
-									<td><a href="bdQnaContent?doc_no=${sAll.doc_no }">${sAll.subject }</a></td>
-									<td>${sAll.user_id }</td>
-									<td>${sAll.create_date }</td>
+									<td><a href="javascript:popup('board_qna_read?doc_no=${sAll.doc_no }')">${sAll.subject }</a></td>
+									<td>${sAll.user_name }</td>
+									<td><fmt:formatDate value="${sAll.create_date}" type="date" pattern="yyyy-MM-dd"/></td>
 									<td>${sAll.bd_count }</td>
 									<td>${sAll.good_count }</td>
 								</tr>
@@ -129,9 +187,9 @@
 							<c:when test="${sAll.app_id == 3}">
 								<tr>
 									<td>${sAll.app_name }</td>
-									<td><a href="prj_board_data_read?doc_no=${sAll.doc_no }&project_id=${sAll.project_id}">${sAll.subject }</a></td>
-									<td>${sAll.user_id }</td>
-									<td>${sAll.create_date }</td>
+									<td><a href="javascript:popup('prj_board_data_read?doc_no=${sAll.doc_no}&project_id=${sAll.project_id}')">${sAll.subject }</a></td>
+									<td>${sAll.user_name }</td>
+									<td><fmt:formatDate value="${sAll.create_date}" type="date" pattern="yyyy-MM-dd"/></td>
 									<td>${sAll.bd_count }</td>
 									<td>${sAll.good_count }</td>
 								</tr>
@@ -139,9 +197,9 @@
 							<c:when test="${sAll.app_id == 4}">
 								<tr>
 									<td>${sAll.app_name }</td>
-									<td><a href="prj_board_report_read?doc_no=${sAll.doc_no }&project_id=${sAll.project_id}">${sAll.subject }</a></td>
-									<td>${sAll.user_id }</td>
-									<td>${sAll.create_date }</td>
+									<td><a href="javascript:popup('prj_board_report_read?doc_no=${sAll.doc_no }&project_id=${sAll.project_id}')">${sAll.subject }</a></td>
+									<td>${sAll.user_name }</td>
+									<td><fmt:formatDate value="${sAll.create_date}" type="date" pattern="yyyy-MM-dd"/></td>
 									<td>${sAll.bd_count }</td>
 									<td>${sAll.good_count }</td>
 								</tr>
@@ -149,23 +207,29 @@
 						</c:choose>
 					</c:forEach>
                 
-                    </thead>
+                    </tbody>
                 </table>
             </div>
 	  		
 	  		
-					<!-- 페이징 작업 -->
-					<c:if test="${page.startPage > page.pageBlock }">
-						<a href="mypost_board_list?currentPage=${page.startPage - page.pageBlock }">[이전]</a>
-					</c:if>
-					
-					<c:forEach var="a" begin="${page.startPage }" end="${page.endPage }">
-						<a href="mypost_board_list?currentPage=${a }">[${a }]</a>
-					</c:forEach>
-					
-					<c:if test="${page.endPage < page.totalPage }">
-						<a href="mypost_board_list?currentPage=${page.startPage + page.pageBlock }">[다음]</a>
-					</c:if>
+			<!-- 페이징 작업 -->
+			<nav aria-label="Page navigation example">
+			  <ul class="pagination justify-content-center">
+				<c:if test="${page.startPage > page.pageBlock}">
+				   	<li class="page-item disabled"><a class="page-link" href="javascript:gotoPage('${page.startPage-page.pageBlock}')" tabindex="-1" aria-disabled="true">Previous</a></li>
+				</c:if>
+			    <c:forEach var="i" begin="${page.startPage}" end="${page.endPage}">
+					<c:choose>
+						<c:when test="${page.currentPage==i}"><li class="page-item active"></c:when>
+						<c:otherwise><li class="page-item"></c:otherwise>
+					</c:choose>
+					<a class="page-link" href="javascript:gotoPage('${i}')">${i}</a></li>
+				</c:forEach>						
+			    <c:if test="${page.endPage > page.totalPage}">
+			    	<li class="page-item"><a class="page-link" href="javascript:gotoPage('${page.startPage+page.pageBlock}')">Next</a></li>
+			    </c:if>
+		      </ul>
+			</nav>
 					  
 	  		<!------------------------------ //개발자 소스 입력 END ------------------------------->
 		</main>		

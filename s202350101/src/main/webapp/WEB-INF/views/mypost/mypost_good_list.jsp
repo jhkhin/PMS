@@ -11,6 +11,7 @@
 <!-- CSS END -->
 
 <!-- JS START -->
+
 <!-- JS END -->
 
 <script type="text/javascript">
@@ -58,74 +59,174 @@
 		<!-- 본문 -->
 		<main id="center" class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
 			<!------------------------------ //개발자 소스 입력 START ------------------------------->
-	  		<div class="container-fluid">
-					<p>
-					<h3>내가 추천한 게시글 :  개</h3>
-					<%-- <h3>내가 쓴 Q&A 게시글 : ${totalBdQna } 개</h3>
-					<h3>내가 쓴 공용 게시글 : ${totalBdFree } 개</h3>
-					<h3>내가 쓴 PJ& 공지자료 게시글 : ${totalDtPrj } 개</h3>
-					<h3>내가 쓴 업무보고 게시글 : ${totalRepPrj } 개</h3> --%>
-					<p>
-					<table>
-						<tr>
-							<td><button type="button" class="btn btn-secondary btn-sm" onclick="goto('project_board_data_write.html')">작성</button></td>
-						</tr>
-					</table>
-					<table class="table table-hover">
-						<thead>
-							<tr>
-								<td>게시판</td>
-								<td>제목</td>
-								<td>작성자</td>
-								<td>작성일</td>
-								<td>조회수</td>
-								<td>추천수</td>
-							</tr>
-						</thead>
-						<tbody>
-							<!-- <tr onclick="goto('project_board_data_read.html')"> -->
-							<tr>	
-								<c:forEach var="qGood" items="${qnaGood }">
-									<tr><td>${qGood.app_name }</td>
-									<td><a href="bdQnaContent?doc_no=${qGood.doc_no }">${qGood.subject }</a></td>
-									<td>${qGood.user_id }</td>
-									<td>${qGood.create_date }</td>
-									<td>${qGood.bd_count }</td>
-									<td>${qGood.good_count }</td></tr>
-								</c:forEach>
-								<c:forEach var="fGood" items="${freeGood }">
-									<tr><td>${fGood.app_name }</td>
-									<td><a href="bdQnaContent?doc_no=${fGood.doc_no }">${fGood.subject }</a></td>
-									<td>${fGood.user_id }</td>
-									<td>${fGood.create_date }</td>
-									<td>${fGood.bd_count }</td>
-									<td>${fGood.good_count }</td></tr>
-								</c:forEach>
-								<c:forEach var="Dgood" items="${prjDataGood }">
-									<tr><td>${PrjBdData.app_name }</td>
-									<td><a href="bdQnaContent?doc_no=${Dgood.doc_no }">${Dgood.subject }</a></td>
-									<td>${Dgood.user_id }</td>
-									<td>${Dgood.create_date }</td>
-									<td>${Dgood.bd_count }</td>
-									<td>${Dgood.good_count }</td></tr>
-								</c:forEach>
-							</tr>
-						</tbody>
-					</table>
-					<nav aria-label="Page navigation example">
-					  <ul class="pagination justify-content-center">
-					    <li class="page-item disabled">
-					      <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
-					    </li>
-					    <li class="page-item"><a class="page-link" href="#">1</a></li>
-					    <li class="page-item"><a class="page-link" href="#">2</a></li>
-					    <li class="page-item"><a class="page-link" href="#">3</a></li>
-					    <li class="page-item">
-					      <a class="page-link" href="#">Next</a>
-					    </li>
-					  </ul>
-					</nav>
-				</div>
+	  		<svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+			  <symbol id="house-door-fill" viewBox="0 0 16 16">
+			    <path d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5z"></path>
+			  </symbol>
+			</svg>		
+			<nav aria-label="breadcrumb" style="padding-top:5px;padding-left: calc(var(--bs-gutter-x) * 0.5);">
+			    <ol class="breadcrumb breadcrumb-chevron p-1">
+			      <li class="breadcrumb-item">
+			        <a class="link-body-emphasis" href="/main">
+			          <svg class="bi" width="16" height="16"><use xlink:href="#house-door-fill"></use></svg>
+			          <span class="visually-hidden">Home</span>
+			        </a>
+			      </li>
+			      <li class="breadcrumb-item">
+			        <a class="link-body-emphasis fw-semibold text-decoration-none" href="">내 글 모음</a>
+			      </li>
+			      <li class="breadcrumb-item active" aria-current="page">내가 추천한 게시글</li>
+			    </ol>
+			</nav>
+            
+            <div class="container-fluid">
+                <table width="100%" style="height:45px">
+					<tr>
+						<td style="vertical-align:top"><span class="apptitle">내가 추천한 게시글</span></td>
+						<td align="right">
+							<form action="mypost_good_list">
+								<table>
+									<tr>
+										<td>
+											<select class="form-select" name="search" style="font-size:0.8rem">
+												<c:forEach var="code" items="${search_codelist}">
+													<option value="${code.cate_code}">${code.cate_name}</option>
+												</c:forEach>
+											</select>
+										</td>
+										<td><input type="text" class="form-control me-2" style="font-size:0.8rem" name="keyword" placeholder="검색어를 입력하세요" required="required"></td>
+										<td>
+											<button type="submit" class="btn btn-dark btn-sm">검색</button>
+											<button type="button" class="btn btn-outline-secondary btn-sm" onclick="goto('mypost_good_list')" style="cursor:pointer">
+							         			<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+													<path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"></path>
+													<path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"></path>
+												</svg>
+											</button>
+										</td>
+									</tr>
+								</table>
+							</form>	
+						</td>
+					</tr>
+				</table>
+										
+				<table width="100%">
+					<tr>
+						<td width="*" style="text-align:right">
+							<c:if test="${not empty keyword}">								
+								<a href="mypost_good_list"><img src="/common/images/btn_icon_delete2.png" width="18" height="19" style="vertical-align:bottom"></a> 
+								검색어( <c:forEach var="code" items="${search_codelist}"><c:if test="${code.cate_code == search}">${code.cate_name}</c:if></c:forEach> = ${keyword} ) 
+								<img src="/common/images/icon_search.png" width="14" height="14" style="vertical-align:bottom"> 검색 건수
+							</c:if>
+							<c:if test="${keyword eq null}">총 건수</c:if>
+							 : ${totalGood}
+						</td>
+					</tr>
+				</table>
+
+                <table class="table">
+                    <thead class="table-light">
+                    <tr>
+                        <th>게시판</th>
+						<th>제목</th>
+						<th>작성자</th>
+						<th>작성일</th>
+						<th>조회수</th>
+						<th>추천수</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach var="sAllGood" items="${selectAllGood }">
+                    	<c:choose>
+							<c:when test="${sAllGood.app_id == 1}">
+								<c:if test="${sAllGood.bd_category == '공지'}">
+									<tr>
+										<td>${sAllGood.bd_category }</td>
+										<td><a href="javascript:popup('board_notify_read?doc_no=${sAllGood.doc_no }')">${sAllGood.subject }</a></td>
+										<td>${sAllGood.user_name }</td>
+										<td><fmt:formatDate value="${sAllGood.create_date }" type="date" pattern="yyyy-MM-dd"/></td>
+										<td>${sAllGood.bd_count }</td>
+										<td>${sAllGood.good_count }</td>
+									</tr>
+								</c:if>
+								<c:if test="${sAllGood.bd_category == '자유'}">
+									<tr>
+										<td>${sAllGood.bd_category }</td>
+										<td><a href="javascript:popup('board_free_read?doc_no=${sAllGood.doc_no }')">${sAllGood.subject }</a></td>
+										<td>${sAllGood.user_name }</td>
+										<td><fmt:formatDate value="${sAllGood.create_date }" type="date" pattern="yyyy-MM-dd"/></td>
+										<td>${sAllGood.bd_count }</td>
+										<td>${sAllGood.good_count }</td>
+									</tr>
+								</c:if>
+								<c:if test="${sAllGood.bd_category == '이벤트'}">
+									<tr>
+										<td>${sAllGood.bd_category }</td>
+										<td><a href="javascript:popup('board_event_read?doc_no=${sAllGood.doc_no }')">${sAllGood.subject }</a></td>
+										<td>${sAllGood.user_name }</td>
+										<td><fmt:formatDate value="${sAllGood.create_date }" type="date" pattern="yyyy-MM-dd"/></td>
+										<td>${sAllGood.bd_count }</td>
+										<td>${sAllGood.good_count }</td>
+									</tr>
+								</c:if>
+							</c:when>
+							<c:when test="${sAllGood.app_id == 2}">
+								<tr>
+									<td>${sAllGood.app_name }</td>
+									<td><a href="javascript:popup('board_qna_read?doc_no=${sAllGood.doc_no }')">${sAllGood.subject }</a></td>
+									
+									<td>${sAllGood.user_name }</td>
+									<td><fmt:formatDate value="${sAllGood.create_date }" type="date" pattern="yyyy-MM-dd"/></td>
+									<td>${sAllGood.bd_count }</td>
+									<td>${sAllGood.good_count }</td>
+								</tr>
+							</c:when>
+							<c:when test="${sAllGood.app_id == 3}">
+								<tr>
+									<td>${sAllGood.app_name }</td>
+									<td><a href="javascript:popup('prj_board_data_read?doc_no=${sAllGood.doc_no}&project_id=${sAllGood.project_id}')">${sAllGood.subject }</a></td>
+									<td>${sAllGood.user_name }</td>
+									<td><fmt:formatDate value="${sAllGood.create_date }" type="date" pattern="yyyy-MM-dd"/></td>
+									<td>${sAllGood.bd_count }</td>
+									<td>${sAllGood.good_count }</td>
+								</tr>
+							</c:when>
+							<c:when test="${sAllGood.app_id == 4}">
+								<tr>
+									<td>${sAllGood.app_name }</td>
+									<td><a href="javascript:popup('prj_board_report_read?doc_no=${sAllGood.doc_no }&project_id=${sAllGood.project_id}')">${sAllGood.subject }</a></td>
+									<td>${sAllGood.user_name }</td>
+									<td><fmt:formatDate value="${sAllGood.create_date }" type="date" pattern="yyyy-MM-dd"/></td>
+									<td>${sAllGood.bd_count }</td>
+									<td>${sAllGood.good_count }</td>
+								</tr>
+							</c:when>
+						</c:choose>
+					</c:forEach>
+                    </tbody>
+                </table>
+            </div>
+	  		
+	  		
+			<!-- 페이징 작업 -->
+			<nav aria-label="Page navigation example">
+			  <ul class="pagination justify-content-center">
+				<c:if test="${page.startPage > page.pageBlock}">
+				   	<li class="page-item disabled"><a class="page-link" href="javascript:gotoPage('${page.startPage-page.pageBlock}')" tabindex="-1" aria-disabled="true">Previous</a></li>
+				</c:if>
+			    <c:forEach var="i" begin="${page.startPage}" end="${page.endPage}">
+					<c:choose>
+						<c:when test="${page.currentPage==i}"><li class="page-item active"></c:when>
+						<c:otherwise><li class="page-item"></c:otherwise>
+					</c:choose>
+					<a class="page-link" href="javascript:gotoPage('${i}')">${i}</a></li>
+				</c:forEach>						
+			    <c:if test="${page.endPage > page.totalPage}">
+			    	<li class="page-item"><a class="page-link" href="javascript:gotoPage('${page.startPage+page.pageBlock}')">Next</a></li>
+			    </c:if>
+		      </ul>
+			</nav>
 	  		
 	  		<!------------------------------ //개발자 소스 입력 END ------------------------------->
 		</main>		

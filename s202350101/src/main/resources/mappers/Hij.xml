@@ -43,7 +43,7 @@
 	
 	<!-- 멤버목록 가져오기 -->
  	<select id="ijAppOkGetUser" parameterType="HijRequestPrjDto" resultType="PrjMemList">
-		SELECT * FROM prj_mem_list WHERE project_id=#{project_id} 
+		SELECT * FROM prj_mem_list WHERE project_id=#{project_id}
 	</select>
 
 	<!-- user_info에 project_id 해당 id로 넣어줌 -->
@@ -98,6 +98,8 @@
 			WHERE project_id=#{project_id}
 	</update>
 	
+<!-- 프로젝트 생성 -->
+
 	 <!-- user_id랑 같은 class_id를 가진학생 리스트 -->
 	<select id="ijlistName" parameterType="String"  resultType="UserInfo">
 		SELECT *
@@ -105,21 +107,20 @@
 		WHERE class_id = (SELECT class_id 
 	                 	  FROM user_info
 	                  	  WHERE User_id =#{User_id})	    
-	    ORDER BY user_id
+	    ORDER BY user_name
 	</select>
 
-	<!-- 프로젝트 생성 -->
 	<insert id="ijReqCreate" parameterType="PrjInfo">
 		INSERT INTO prj_info (project_id, project_name, project_startdate, project_enddate,
 							  project_manager_id, project_intro, project_approve,
 							  project_status, project_create_date)
-		VALUES (project_step_seq.nextval, #{project_name}, #{project_startdate}, #{project_enddate}, 
+		VALUES (project_id_seq.nextval, #{project_name}, #{project_startdate}, #{project_enddate}, 
 				#{project_manager_id}, #{project_intro}, #{project_approve}, #{project_status}, sysdate)
 	</insert>
 
 	<!-- prj_mem_list에 팀원 추가 -->
 	<insert id="ijMemCreate" parameterType="PrjInfo">
-		INSERT INTO prj_mem_list (project_id, user_id) VALUES (project_step_seq.currval, #{member_user_id})
+		INSERT INTO prj_mem_list (project_id, user_id) VALUES (project_id_seq.currval, #{member_user_id})
 	</insert>
 	
 
@@ -131,6 +132,7 @@
 		FROM user_info u, prj_info p
 		WHERE u.project_id = p.project_id
 		AND p.project_id =#{project_id}
+		ORDER BY u.user_name
 	</select>
 
 	<!-- 프로젝트 조회  -->
@@ -140,7 +142,14 @@
 		WHERE p.project_manager_id = u.user_id
 		AND p.project_id=#{project_id}
 	</select>
-
+	
+	<!-- 알람 업데이트 -->
+	<update id="ijUpdateAlarm" parameterType="PrjInfo">
+		UPDATE prj_info
+		SET alarm_flag = 'Y'
+		WHERE project_id=#{project_id}
+	</update>
+	
 	<!-- 프로젝트 단계조회 -->
 	<select id="ijTitleList" parameterType="int" resultType="PrjStep">
 		SELECT *
@@ -218,13 +227,6 @@
 		OR  a.doc_body like '%' || #{keyword} || '%' 
 		OR  a.user_name like '%' || #{keyword} || '%' 
 	</select>
-	
-	<!-- 알람 업데이트 -->
-	<update id="ijUpdateAlarm" parameterType="PrjInfo">
-		UPDATE prj_info
-		SET alarm_flag = 'Y'
-		WHERE project_id=#{project_id}
-	</update>
 	
 </mapper>
 

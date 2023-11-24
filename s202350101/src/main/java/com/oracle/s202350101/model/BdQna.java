@@ -1,6 +1,6 @@
 package com.oracle.s202350101.model;
 
-import java.util.Date;
+import java.sql.Date;
 
 import javax.validation.constraints.NotNull;
 
@@ -37,4 +37,11 @@ public class BdQna {
 	// 조회용
 	private String app_name;
 	private String user_name;
+	private String bd_category_name;
+	
+	// 알림용 목록 표시 (Y/y)
+	private String  doc_group_list;		
+	
+
+	
 }

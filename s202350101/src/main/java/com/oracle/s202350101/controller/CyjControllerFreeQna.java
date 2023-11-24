@@ -3,7 +3,6 @@ package com.oracle.s202350101.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,13 +27,13 @@ import com.oracle.s202350101.model.BdFreeComt;
 import com.oracle.s202350101.model.BdFreeGood;
 import com.oracle.s202350101.model.BdQna;
 import com.oracle.s202350101.model.BdQnaGood;
+import com.oracle.s202350101.model.Code;
 import com.oracle.s202350101.model.Paging;
 import com.oracle.s202350101.model.UserInfo;
 import com.oracle.s202350101.service.cyjSer.CyjService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import oracle.net.aso.m;
 
 @Slf4j
 @Controller
@@ -92,7 +92,16 @@ public class CyjControllerFreeQna {
 		System.out.println("CyjControllerQna freeContent-> " + freeContent);
 		model.addAttribute("freeContent", freeContent);
 		
-		// 접속자와 작성자 비교 --> 같으면 1, 다르면 0
+		
+		if(userInfoDTO.getUser_id().equals(freeContent.getUser_id())) {
+			// 현재 로그인 사용자가 글작성자인 경우 댓글들 alarm_flag='Y'로 일괄 변경처리
+			System.out.println("글작성자가 자신글 조회시 댓글들 alarm_flag='Y'로 일괄 변경처리");
+			int updateCommentAlarmCount = cs.cyUpdateCommentAlarmFlag(freeContent);
+		}	
+//		model.addAttribute("userInfoDTO", userInfoDTO); // 로그인사용자 정보
+
+		
+		// 게시글의 접속자와 작성자 비교 --> 같으면 1, 다르면 0
 		int result = 0;
 		if (loginId.equals(freeContent.getUser_id())) {
 			result = 1;
@@ -106,29 +115,50 @@ public class CyjControllerFreeQna {
 		System.out.println("CyjControllerQna freeCount-> " + freeCount);
 		model.addAttribute("freeContent", freeContent);
 		
-		// 자유_댓글리스트
-		List<BdFree> freeComtList = cs.freeComtList(doc_no);
-		System.out.println("CyjControllerQna freeComtList-> " + freeComtList);
+		// 자유_댓글리스트 보여주기 위해 
+		List<BdFreeComt> freeComtList = cs.freeComtList(doc_no);
+		System.out.println("CyjControllerQna freeComtList.size()-> " + freeComtList.size());
 		model.addAttribute("freeComtList", freeComtList);
 		
 		return "board/board_free/board_free_content";
 	}
 	
-	// 자유_댓글
+	// 자유_댓글 입력
+	@PostMapping(value = "comtFreeComt") 
+	public String comtFreeComt(HttpServletRequest request, BdFreeComt bdFreeComt){
+		System.out.println("CyjControllerQna comtFreeComt Start----------------------");
+		
+		System.out.println("session.userInfo-> " + request.getSession().getAttribute("userInfo"));
+		UserInfo userInfoDTO = (UserInfo) request.getSession().getAttribute("userInfo");
+		
+		// loginId : 댓글 입력 작성자
+		String loginId = userInfoDTO.getUser_id();
+		System.out.println("댓글 입력 작성자 loginId-> " + loginId);
+		bdFreeComt.setUser_id(loginId);
+		
+		// 댓글 입력  (이벤트도 사용) 
+		int comtFreeComtInsert = cs.comtInsert(bdFreeComt);
+		System.out.println("CyjControllerQna comtFreeComtInsert-> " + comtFreeComtInsert);
+		
+		return "redirect:/free_content?doc_no="+bdFreeComt.getDoc_no();
+	}
+	
+// ------------------------------------------------------------------
+
+	// 자유_댓글 삭제 
 	@ResponseBody
-	@RequestMapping(value = "ajaxFreeComt")
-	public List<BdFreeComt> ajaxfreeComt(BdFreeComt bdFreeComt){
-		System.out.println("CyjControllerQna ajaxFreeComt Start----------------------");
+	@RequestMapping(value = "free_comt_delete", method = RequestMethod.POST)
+	public int freeComtDelete(int doc_no, int comment_doc_no) {
+		System.out.println("CyjControllerQna free_comt_delete Start----------------------");
 		
-		// 댓글 입력
-		int ajaxComtInsert = cs.ajaxFreeComt(bdFreeComt);
-		System.out.println("CyjControllerQna ajaxComtInsert-> " + ajaxComtInsert);
+		BdFreeComt bdFreeComt = new BdFreeComt();
+		bdFreeComt.setDoc_no(doc_no);
+		bdFreeComt.setComment_doc_no(comment_doc_no);
 		
-		// 입력한 댓글 갖고 옴
-		List<BdFreeComt> freeComtList = cs.freeComtList(bdFreeComt);
-		System.out.println("CyjControllerQna freeComtList-> " + freeComtList);
+		int comtDelete = cs.freeComtDelete(bdFreeComt);   // 이벤트와 같이 쓰임
+		System.out.println("CyjControllerQna comtDelete-> " + comtDelete);
 		
-		return freeComtList;
+		return comtDelete;
 	}
 	
 // ------------------------------------------------------------------
@@ -219,7 +249,6 @@ public class CyjControllerFreeQna {
 		
 		String saveName = uploadFile(file1.getOriginalFilename(), file1.getBytes(), uploadPath);  // 저장되는 파일명 
 		log.info("saveName: " + saveName);
-			
 		
 		System.out.println("session.userInfo-> " + request.getSession().getAttribute("userInfo"));
 		UserInfo userInfoDTO = (UserInfo) request.getSession().getAttribute("userInfo");
@@ -296,7 +325,7 @@ public class CyjControllerFreeQna {
 		
 // ------------------------------------------------------------------
 
-	// 자유_삭제 
+	// 자유_게시글 삭제 
 	@ResponseBody
 	@RequestMapping(value = "freeDelete")
 	public int ajaxFreeDelete(int doc_no) {
@@ -307,7 +336,57 @@ public class CyjControllerFreeQna {
 		
 		return ajaxFreeDelete;
 	}
-	
+
+// ------------------------------------------------------------------
+
+	// 자유_read : 알림 조회용
+	@RequestMapping(value = "free_read")
+	public String freeRead(HttpServletRequest request, int doc_no, Model model) {
+		System.out.println("CyjControllerQna free_content Start----------------------");
+		
+		System.out.println("session.userInfo-> " + request.getSession().getAttribute("userInfo"));
+		UserInfo userInfoDTO = (UserInfo) request.getSession().getAttribute("userInfo");
+		
+		// loginId : 상세 페이지에서 접속자 (수정 버튼 보이게) / 작성자 아님 (수정 버튼 안 보이게)
+		String loginId = userInfoDTO.getUser_id();
+		System.out.println("상세페이지 접속자 loginId-> " + loginId);
+		
+		// 자유_상세
+		BdFree freeContent = cs.freeContent(doc_no);
+		System.out.println("CyjControllerQna freeContent-> " + freeContent);
+		model.addAttribute("freeContent", freeContent);
+		
+		
+		if(userInfoDTO.getUser_id().equals(freeContent.getUser_id())) {
+			// 현재 로그인 사용자가 글작성자인 경우 댓글들 alarm_flag='Y'로 일괄 변경처리
+			System.out.println("글작성자가 자신글 조회시 댓글들 alarm_flag='Y'로 일괄 변경처리");
+			int updateCommentAlarmCount = cs.cyUpdateCommentAlarmFlag(freeContent);
+		}	
+//		model.addAttribute("userInfoDTO", userInfoDTO); // 로그인사용자 정보
+
+		
+		// 게시글의 접속자와 작성자 비교 --> 같으면 1, 다르면 0
+		int result = 0;
+		if (loginId.equals(freeContent.getUser_id())) {
+			result = 1;
+		} else {
+			result = 0;
+		}
+		model.addAttribute("result", result);
+		
+		// 자유_조회수
+		int freeCount = cs.freeCount(doc_no);
+		System.out.println("CyjControllerQna freeCount-> " + freeCount);
+		model.addAttribute("freeContent", freeContent);
+		
+		// 자유_댓글리스트 보여주기 위해 
+		List<BdFreeComt> freeComtList = cs.freeComtList(doc_no);
+		System.out.println("CyjControllerQna freeComtList.size()-> " + freeComtList.size());
+		model.addAttribute("freeComtList", freeComtList);
+		
+		return "board/board_free/board_free_read";
+	}
+
 // ----------------------------------------------------------------------		
 // ------------------------- qna 게시판 ------------------------------------
 	
@@ -316,8 +395,8 @@ public class CyjControllerFreeQna {
 	public String boardQna(BdQna bdQna, String currentPage, Model model) {
 		System.out.println("CyjControllerQna board_qna Start----------------------");
 		
-		// 총 갯수
-		int qnaTotalCount = cs.qnaTotalCount();
+		// 갯수 (전체 or 분류검색)
+		int qnaTotalCount = cs.qnaSelectCount(bdQna);
 		System.out.println("CyjControllerQna qnaTotalCount-> " + qnaTotalCount);
 		model.addAttribute("qnaTotalCount", qnaTotalCount);
 		
@@ -332,17 +411,30 @@ public class CyjControllerFreeQna {
 		bdQna.setEnd(page.getEnd());
 		model.addAttribute("page", page);
 		
-		// 전제 리스트
+		model.addAttribute("keyword", bdQna.getKeyword());
+		
+		// 리스트 (전체 or 분류검색)
 		List<BdQna> qnaList = cs.qnaList(bdQna);
 		System.out.println("CyjControllerQna qnaList.size()-> " + qnaList.size());
 		model.addAttribute("qnaList", qnaList);
+		model.addAttribute("doc_group_list", bdQna.getDoc_group_list()); //답변글만 표시경우(알림)
+		
+		// 검색 분류 코드 가져오기
+		Code code = new Code();
+		code.setTable_name("BD_QNA");
+		code.setField_name("BD_CATEGORY");
+		 
+		// qna_검색 분류 코드 가져오기
+		List<Code> codeList = cs.codeList(code); 
+		System.out.println("CyjControllerQna codeList.size()-> " + codeList.size());
+		model.addAttribute("codeList", codeList);
 		
 		return "board/board_qna/board_qna_list";
 	}
 	
 // ----------------------------------------------------------------------		
 
-	// QNA_새 글 작성하기 위한 페이지 이동
+	// QNA_원글 작성하기 위한 페이지 이동
 	@RequestMapping(value = "qna_insert_form")
 	public String qnaInsertForm(HttpServletRequest request, Model model) {
 		System.out.println("CyjControllerQna qna_insert_form Start----------------------");
@@ -350,31 +442,49 @@ public class CyjControllerFreeQna {
 		System.out.println("session.userInfo->"+request.getSession().getAttribute("userInfo"));
 		UserInfo userInfoDTO = (UserInfo) request.getSession().getAttribute("userInfo");
 		
-		BdQna bdQna = new BdQna();		
-		String parent_doc_no = request.getParameter("parent_doc_no");
-
-//		BdQna selectBdQna = cs.selectBdQna(bdQna);
-//		System.out.println("CyjControllerQna selectBdQna-> " + selectBdQna);
-//		model.addAttribute("selectBdQna", selectBdQna);
+		// 분류 코드 가져오기
+		Code code = new Code();
+		code.setTable_name("BD_QNA");
+		code.setField_name("BD_CATEGORY");
+		 
+		// qna_분류 코드 가져오기
+		List<Code> bd_category_codelist = cs.codeList(code); 
+		System.out.println("CyjControllerQna codeList.size()-> " + bd_category_codelist.size());
+		model.addAttribute("bd_category_codelist", bd_category_codelist);
 		
+		BdQna bdQna = new BdQna();		
+		model.addAttribute("doc_group", "0");
+		model.addAttribute("doc_step", "0");
+		model.addAttribute("doc_indent", "0");
+		model.addAttribute("subject", "");
+		model.addAttribute("parent_doc_no", "0");
+		model.addAttribute("parent_doc_user_id", "");
+		model.addAttribute("bd_category", "");	
+		model.addAttribute("userInfoDTO", userInfoDTO); // 로그인 사용자 정보 
+		
+		// 답변등록의 경우, 기존 답변들 Doc_Step처리
+		int parent_doc_no = bdQna.getParent_doc_no();
+		if (parent_doc_no > 0) {
+			// 답변 순서 조절
+			int qnaReply = cs.qnaReply(bdQna);
+			bdQna.setDoc_step(bdQna.getDoc_no() + 1);
+			bdQna.setDoc_indent(bdQna.getDoc_indent() + 1);
+		}
 		return "board/board_qna/board_qna_insert";
 	}
 	
-	// 새 글 입력
+	// 원글 작성
 	@PostMapping(value = "qna_insert")
 	public String qnaInsert(@Valid @ModelAttribute BdQna bdQna, BindingResult bindingResult
 						   ,@RequestParam(value = "file1", required = false) MultipartFile file1
 						   ,HttpServletRequest request , Model model) throws IOException {
 		System.out.println("CyjControllerQna qna_insert Start----------------------");
-		
-		// validation
-		if (bindingResult.hasErrors()) {
-			System.out.println("CyjControllerQna free_insert hasErrors");
-			return "board/board_free/board_free_insert";
-		}
+
+		// 폼 에러검사 해야함 
+		// !!!!!
 		
 		// file Upload
-		String attach_path = "upload"; // 실제 파일이 저장되는 폴더명, uploadPath의 이름과 동일하게 해야 오류 X
+		String attach_path = "upload"; 	  // 실제 파일이 저장되는 폴더명, uploadPath의 이름과 동일하게 해야 오류 X
 		String uploadPath = request.getSession().getServletContext().getRealPath("/upload/"); // 저장 위치 지정 
 		
 		System.out.println("CyjController File Upload Post Start");
@@ -393,8 +503,8 @@ public class CyjControllerFreeQna {
 		
 		// loginId : 새 글 작성에는 접속자이자 작성자 
 		String loginId = userInfoDTO.getUser_id();
-		System.out.println(request.getSession().getAttribute("loginId"));
 		bdQna.setUser_id(loginId);
+		System.out.println(request.getSession().getAttribute("loginId"));
 		
 		if(!file1.isEmpty()) {
 			log.info("파일이 존재합니다  ");
@@ -402,20 +512,8 @@ public class CyjControllerFreeQna {
 			bdQna.setAttach_name(saveName);
 		}	
 		
-		//////////
-		//답변등록의 경우, 기존 답변들 Doc_Step처리
-//		int parent_doc_no = prjBdData.getParent_doc_no();
-//		int project_id = prjBdData.getProject_id();
-//		if(parent_doc_no > 0 && project_id > 0) {
-//			//답변작성인 경우
-//			//------------------------------------------------------
-//			int replyCount = jmhDataSer.updateOtherReply(prjBdData);
-//			//------------------------------------------------------
-//			prjBdData.setDoc_step(prjBdData.getDoc_step()+1);
-//			prjBdData.setDoc_indent(prjBdData.getDoc_indent()+1);
-//		}
-		
-		// 새 게시글 입력
+		// 새 글 입력 (원글)
+		bdQna.setAlarm_flag("");
 		int qnaInsert = cs.qnaInsert(bdQna);
 		System.out.println("CyjControllerQna qnaInsert-> " + qnaInsert);
 		model.addAttribute("qnaInsert", qnaInsert);
@@ -432,6 +530,7 @@ public class CyjControllerFreeQna {
 		
 		System.out.println("session.userInfo-> " + request.getSession().getAttribute("userInfo"));
 		UserInfo userInfoDTO = (UserInfo) request.getSession().getAttribute("userInfo");
+		model.addAttribute("userInfoDTO", userInfoDTO);
 		
 		// loginId : 상세 페이지에서 접속자 (수정 버튼 보이게) / 작성자 아님 (수정 버튼 안 보이게)
 		String loginId = userInfoDTO.getUser_id();
@@ -441,6 +540,13 @@ public class CyjControllerFreeQna {
 		BdQna qnaContent = cs.qnaContent(doc_no);
 		System.out.println("CyjControllerQna qnaContent-> " + qnaContent);
 		model.addAttribute("qnaContent", qnaContent);
+		
+		if(userInfoDTO.getUser_id().equals(qnaContent.getParent_doc_user_id())) {
+			// 현재 로그인 사용자가 답글의 부모글 작성자인 경우 답글 조회시 alarm_flag='Y'로 변경처리
+			System.out.println("부모글작성자가 답글조회시 alarm_flag='Y'로 변경처리");
+			int cyUpdateReplyAlarmCount = cs.cyUpdateReplyAlarmFlag(qnaContent);
+		}
+//		model.addAttribute("userInfoDTO", userInfoDTO); //로그인사용자 정보
 		
 		// 접속자와 작성자 비교 --> 같으면 1, 다르면 0
 		int result = 0;
@@ -456,8 +562,32 @@ public class CyjControllerFreeQna {
 		System.out.println("CyjControllerQna qnaCount-> " + qnaCount);
 		model.addAttribute("qnaCount", qnaCount);
 		
-		
 		return "board/board_qna/board_qna_content";
+	}
+	
+	// 상세페이지 내부 (답글)
+	@PostMapping(value = "qna_content_replyInsert")
+	public String qnaContentReplyInsert(BdQna bdQna, Model model) {
+		
+		System.out.println("CyjControllerQna subject: "  + bdQna.getSubject());
+		System.out.println("CyjControllerQna doc_body: " + bdQna.getDoc_body());
+		
+		// 기존 답변들 Doc_Step 처리
+		int parent_doc_no = bdQna.getParent_doc_no();
+		if (parent_doc_no > 0) {
+			// 답변 순서 조절
+			int qnaReply = cs.qnaReply(bdQna);
+			bdQna.setDoc_step(bdQna.getDoc_no() + 1);
+			bdQna.setDoc_indent(bdQna.getDoc_indent() + 1);
+		}
+		
+		// 새 글 작성 (답글)
+		bdQna.setAlarm_flag("N");
+		int qnaInsert = cs.qnaInsert(bdQna);
+		System.out.println("CyjControllerQna qnaInsert-> " + qnaInsert);
+		model.addAttribute("qnaInsert", qnaInsert);
+		
+		return "redirect:/board_qna";
 	}
 	
 // ----------------------------------------------------------------------		
@@ -489,9 +619,9 @@ public class CyjControllerFreeQna {
 		BdQna bdQna = new BdQna();
 		bdQna.setDoc_no(doc_no);
 		
-		if (qnaConfirm == 1) {  	// 중복 O
+		if (qnaConfirm == 1) {  	  // 중복 O
 			result = "duplication";
-		} else {					// 중복 X
+		} else {					  // 중복 X
 			// 2. 추천 insert
 			int qnaGoodInsert = cs.qnaGoodInsert(bdQnaGood);
 			System.out.println("CyjControllerQna qnaGoodInsert-> " + qnaGoodInsert);
@@ -518,6 +648,16 @@ public class CyjControllerFreeQna {
 	public String qnaUpdate(int doc_no, Model model) {
 		System.out.println("CyjControllerQna qna_update Start");
 		
+		// 분류 코드 가져오기
+		Code code = new Code();
+		code.setTable_name("BD_QNA");
+		code.setField_name("BD_CATEGORY");
+		 
+		// qna_분류 코드 가져오기
+		List<Code> bd_category_codelist = cs.codeList(code); 
+		System.out.println("CyjControllerQna codeList.size()-> " + bd_category_codelist.size());
+		model.addAttribute("bd_category_codelist", bd_category_codelist);
+		
 		BdQna content = cs.qnaContent(doc_no);
 		System.out.println("CyjControllerQna content-> " + content);
 		model.addAttribute("content", content);
@@ -540,11 +680,62 @@ public class CyjControllerFreeQna {
 	}
 	
 // ----------------------------------------------------------------------		
+		
+	// qna_게시글 삭제 : 일단 답글 없는 것만 가능
+	@ResponseBody
+	@RequestMapping(value = "ajax_qna_delete")
+	public int qnaDelete(int doc_no) {
+		System.out.println("CyjControllerQna qnaDelete Start");
+		
+		int qnaBoardDelete = cs.qnaDelete(doc_no);
+		System.out.println("qna 삭제-> " + qnaBoardDelete);
+		
+		return qnaBoardDelete;
+	} 
 	
 	
 	
-	
-	
+	// 자유 : 팝업 조회용
+	@RequestMapping(value = "board_qna_read")
+	public String boardQnaRead(HttpServletRequest request, String currentPage, int doc_no, Model model) {
+		System.out.println("CyjControllerQna qna_content");
+		
+		System.out.println("session.userInfo-> " + request.getSession().getAttribute("userInfo"));
+		UserInfo userInfoDTO = (UserInfo) request.getSession().getAttribute("userInfo");
+		model.addAttribute("userInfoDTO", userInfoDTO);
+		
+		// loginId : 상세 페이지에서 접속자 (수정 버튼 보이게) / 작성자 아님 (수정 버튼 안 보이게)
+		String loginId = userInfoDTO.getUser_id();
+		System.out.println("상세페이지 접속자 loginId-> " + loginId);
+		
+		// qna_상세
+		BdQna qnaContent = cs.qnaContent(doc_no);
+		System.out.println("CyjControllerQna qnaContent-> " + qnaContent);
+		model.addAttribute("qnaContent", qnaContent);
+		
+		if(userInfoDTO.getUser_id().equals(qnaContent.getParent_doc_user_id())) {
+			// 현재 로그인 사용자가 답글의 부모글 작성자인 경우 답글 조회시 alarm_flag='Y'로 변경처리
+			System.out.println("부모글작성자가 답글조회시 alarm_flag='Y'로 변경처리");
+			int cyUpdateReplyAlarmCount = cs.cyUpdateReplyAlarmFlag(qnaContent);
+		}
+//		model.addAttribute("userInfoDTO", userInfoDTO); //로그인사용자 정보
+		
+		// 접속자와 작성자 비교 --> 같으면 1, 다르면 0
+		int result = 0;
+		if (loginId.equals(qnaContent.getUser_id())) {
+			result = 1;
+		} else {
+			result = 0;
+		}
+		model.addAttribute("result", result);
+		
+		// qna_조회수
+		int qnaCount = cs.qnaCount(doc_no);
+		System.out.println("CyjControllerQna qnaCount-> " + qnaCount);
+		model.addAttribute("qnaCount", qnaCount);
+		
+		return "board/board_qna/board_qna_read";
+	}
 	
 	
 	

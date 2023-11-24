@@ -9,7 +9,7 @@
 
 <!--CSS START -->
 <style type="text/css">
-	td, th {padding: 15px;}
+	td, th {margin: 80px;}
 </style>
 <!-- CSS END -->
 
@@ -20,7 +20,7 @@
 
 	// 추천
 	function freeGood(doc_no){
-		alert("free 추천 doc_no-> " + doc_no);
+//		alert("free 추천 doc_no-> " + doc_no);
 		$.ajax({
 			url       : 'ajaxFreeGoodCount'
 		   ,dataType  : 'text'
@@ -32,20 +32,17 @@
 				   alert("error");
 			   } else {
 				   alert("추천되었습니다");
-				   $('#free_btn').html("추천수 " + data);
+				   $('#count_btn').html(data);
 			   }
 		   }
 		});
 	}
+
 	
-	
-	
-	
-	// 삭제
+	// 게시글 삭제
 	function freeDelete(doc_no, user_id) {
-//		alert("free 삭제 !!");
-		var result = 0;
-		var inputUserId = prompt('회원아이디를 입력하세요');
+//		alert("free 게시글 삭제 !!");
+		var inputUserId = prompt('회원 아이디를 입력하세요');
 		if (inputUserId != user_id) {
 			alert('회원ID가 올바르지 않습니다');
 			return;
@@ -68,6 +65,32 @@
 		   }
 		});
 	}
+	
+	// 댓글 삭제
+	function freeComtDelete(doc_no, comment_doc_no, user_id){
+		alert('free 댓글 삭제 doc_no: ' + doc_no);
+		alert('free 댓글 삭제 user_id: ' + user_id);
+		
+		var inputUserId = prompt('회원 아이디를 입력하세요');
+		if (inputUserId != user_id) {
+			alert("회원ID가 올바르지 않습니다");
+			return;
+		}
+		
+		$.ajax({
+			url 		: 'free_comt_delete',
+			type 		: 'POST',
+			dataType 	: 'text',
+			data 		: {'doc_no':doc_no, 'comment_doc_no':comment_doc_no},
+			success 	: function(data){
+				if(data == 1){
+					alert('삭제되었습니다');	
+					 window.location.href = "free_content?doc_no="+doc_no;		
+				}
+			}
+		});
+	}
+	
 
 	$(function() {	
 	    $.ajax({
@@ -93,28 +116,9 @@
 	            $('#footer').html(data);
 	        }
 	    });
+
 	    
-	    // 자유_댓글
-	    $("#comment-free").submit(function(e) {
-	    	e.preventDefault();  	
-	    	var freeComt = $(this).serialize();  // this = #comment-free
-	    	console.log(freeComt);
-	    	alert(freeComt);
-	    	$.ajax({
-	    		url      : 'ajaxFreeComt'
-	    	   ,type     : 'POST'
-	    	   ,dataType : 'json'
-	    	   ,data     : bdFreeComt
-	    	   ,success  : function(data) {
-	    		   console.log(data);
-	    	   }	    
-	    	});
-	    });
-	    
-	    
-	    
-	    
-	 
+
 	});
 
 </script>
@@ -136,65 +140,95 @@
 		<main id="center" class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
 			<!------------------------------ //개발자 소스 입력 START ------------------------------->
 
-			<h3>상세 페이지</h3>
-			
-			<table border="1">
-				<tr> <th>글 번호</th>       <td>${freeContent.doc_no}</td> </tr>
-				<tr> <th>이름</th>         <td>${freeContent.user_name}</td> </tr>
-				<tr> <th>작성일시</th>      <td>${freeContent.create_date}</td> </tr>
-				<tr> <th>수정일시</th>      <td>${freeContent.modify_date}</td> </tr>
-				<tr> <th>게시종류</th>      <td>${freeContent.bd_category}</td> </tr>
-				<tr> <th>제목</th>        <td>${freeContent.subject}</td> </tr>
-				<tr> <th>본문</th>        <td>${freeContent.doc_body}</td> </tr>
-				<tr> <th>조회수</th>       <td>${freeContent.bd_count}</td> </tr>
-				<tr> <th>추천</th>        <td>${freeContent.good_count}</td> </tr>
-				<tr> <th>첨부파일명</th>    <td>${freeContent.attach_name}</td> </tr>	
-				<tr> <th>첨부파일명</th>     <td>${freeContent.attach_name}<img alt="" src="${pageContext.request.contextPath}/${freeContent.attach_path}/${freeContent.attach_name}"></td> </tr>	
-				
-				
+			<h4 class ="pt-4">문서 조회</h4>
+
+			<table width="100%" style="margin-top:7px">
 				<tr>
-					<td colspan="2">
-						<input type="button" value="목록" onclick="location.href='board_free'">
+					<td style="text-align:right">
+						<input type="button" class="btn btn-dark btn-sm" value="목록" onclick="location.href='board_free'">
 						
 						<c:if test="${result == 1}">
-							<input type="button" value="수정" onclick="location.href='free_update?doc_no=${freeContent.doc_no}'">
+							<input type="button" class="btn btn-dark btn-sm" value="수정" onclick="location.href='free_update?doc_no=${freeContent.doc_no}'">
 						</c:if> 
 						 
 						<c:if test="${result == 1}">
-							<input type="button" value="삭제" onclick="freeDelete(${freeContent.doc_no}, '${freeContent.user_id }' )">
+							<input type="button" class="btn btn-dark btn-sm" value="삭제" onclick="freeDelete(${freeContent.doc_no}, '${freeContent.user_id }' )">
 						</c:if>
+						<button type="button" class="btn btn-dark btn-sm" onclick="freeGood(${freeContent.doc_no})">추천</button>
+						<button type="button" class="btn btn-dark btn-sm" onclick="closeDoc()">닫기</button>
 					</td>
 				</tr>
+			</table>			
+			<table class="table">
+				<colgroup>
+					<col width="15%"></col>
+					<col width="85%"></col>
+				</colgroup>
+				<tr> <th>글 번호</th>       <td>${freeContent.doc_no}</td> </tr>
+				<tr> <th>이름</th>         <td>${freeContent.user_name}</td> </tr>
+				<tr> <th>작성일</th>      <td>${freeContent.create_date}</td> </tr>
+				<tr> <th>수정일</th>      <td>${freeContent.modify_date}</td> </tr>
+				<tr> <th>게시종류</th>      <td>${freeContent.bd_category}</td> </tr>
+				<tr> <th>제목</th>        <td>${freeContent.subject}</td> </tr>
+				<tr> <th>본문</th>        <td><pre>${freeContent.doc_body}</pre></td> </tr>
+				<tr> <th>조회수</th>       <td>${freeContent.bd_count}</td> </tr>
+				<tr> <th>추천</th>        <td id="count_btn">${freeContent.good_count}</td> </tr>
+				<tr> <th>첨부파일</th>     <td>${freeContent.attach_name}<img alt="" src="${pageContext.request.contextPath}/${freeContent.attach_path}/${freeContent.attach_name}"></td> </tr>	
 			</table>
 			
-			
-			<!-- 추천 -->
-			<button type="button" id="free_btn" onclick="freeGood(${freeContent.doc_no})">추천 ${freeContent.good_count}</button>
-
-
-			<!-- 댓글 -->
-			<form id="comment-free">
+			<!-- 댓글 등록 -->
+			<form action="comtFreeComt" method="post">
 				<input type="hidden" id="doc_no"  name="doc_no"  value="${freeContent.doc_no }">
 				<input type="hidden" id="user_id" name="user_id" value="${freeContent.user_id }">
-				
-				<input type="text"   name="free_context">
-				<input type="submit" value="댓글 등록">
+				<table class="table">
+					<colgroup>
+						<col width="15%"></col>
+						<col width="65%"></col>
+						<col width="20%"></col>
+					</colgroup>
+					<tr>
+						<th>댓글</th>
+						<td><textarea  cols="100"  rows="5"    name="comment_context" class="form-control"></textarea></td>
+						<td style="vertical-align:bottom"><input type="submit" class="btn btn-dark btn-sm" value="댓글 등록"></td>
+					</tr>
+				</table>
 			</form>
 				
-			<table border="1">
+			<table class="table">
+				<thead class="table-light">
 				<tr>
-					<th>이름</th> <th>작성일시</th> <th>내용</th>
+					<th>번호</th> <th>이름</th> <th>작성일</th><th>내용</th><th></th>
 				</tr>
-				
-				<c:forEach var="comt" items="${freeComtList }">
-					<tr>
+				</thead>
+				<tbody>
+				<c:forEach var="comt" items="${freeComtList}">
+					<tr id="comt${comt.rn}">
+						<td>${comt.rn}</td>
 						<td>${comt.user_name}</td>
 						<td>${comt.create_date}</td>
 						<td>${comt.comment_context}</td>
+						<td><input type="button" value="댓글 삭제" onclick="freeComtDelete(${comt.doc_no}, ${comt.comment_doc_no}, '${comt.user_id}' )"></td>
 					</tr>
 				</c:forEach>
+				</tbody>
 			</table>
 		
+		
+			<!-- 페이징 작업 -->
+			<div class="pagebox">
+				<c:if test="${page.startPage > page.pageBlock }">
+					<a href="free_content?doc_no=${freeContent.doc_no}&currentPage=${page.startPage - page.pageBlock }">[이전]</a>
+				</c:if>
+				
+				<c:forEach var="a" begin="${page.startPage }" end="${page.endPage }">
+					<a href="free_content?doc_no=${freeContent.doc_no}&currentPage=${a }">[${a }]</a>
+				</c:forEach>
+				
+				<c:if test="${page.endPage < page.totalPage }">
+					<a href="free_content?doc_no=${freeContent.doc_no}&currentPage=${page.startPage + page.pageBlock }">[다음]</a>
+				</c:if>
+			</div>
+			
 	  		<!------------------------------ //개발자 소스 입력 END ------------------------------->
 		</main>		
 	

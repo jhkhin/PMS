@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,14 +26,20 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.oracle.s202350101.model.BdDataComt;
 import com.oracle.s202350101.model.BdDataGood;
+import com.oracle.s202350101.model.BdFree;
+import com.oracle.s202350101.model.BdQna;
 import com.oracle.s202350101.model.BdRepComt;
 import com.oracle.s202350101.model.Code;
 import com.oracle.s202350101.model.PrjBdData;
 import com.oracle.s202350101.model.PrjBdRep;
+import com.oracle.s202350101.model.PrjInfo;
+import com.oracle.s202350101.model.PrjMemList;
 import com.oracle.s202350101.model.UserInfo;
 import com.oracle.s202350101.model.Paging;
-import com.oracle.s202350101.service.jmhSer.JmhServicePrjBdDataImpl;
-import com.oracle.s202350101.service.jmhSer.JmhServicePrjBdRepImpl;
+import com.oracle.s202350101.service.jmhSer.JmhServiceMain;
+import com.oracle.s202350101.service.jmhSer.JmhServicePrjBdData;
+import com.oracle.s202350101.service.jmhSer.JmhServicePrjBdRep;
+import com.oracle.s202350101.service.jmhSer.JmhServicePrjInfo;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,12 +49,112 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JmhController {
 	
-	private final JmhServicePrjBdDataImpl jmhDataSer;
-	private final JmhServicePrjBdRepImpl jmhRepSer;
+	private final JmhServicePrjBdData jmhDataSer;
+	private final JmhServicePrjBdRep jmhRepSer;	
+	private final JmhServicePrjInfo jmhPrjInfoSer;
+	private final JmhServiceMain jmhMainSer;
+	
+	
+	//#######################################################################
+	//############  MAIN 화면 포틀릿 데이타 /bd_free_main/{번호}  ############
+	//#######################################################################
+	
+	@GetMapping("/main_bd_free/{bd_category}")
+	@ResponseBody
+	public List<BdFree> mainBdFree(HttpServletRequest request, @PathVariable String bd_category, Model model) {
+		List<BdFree> mainBoardList = null;
+
+		
+		//검색 분류코드 가져오기
+		Code code = new Code();
+		code.setTable_name("BD_FREE");
+		code.setField_name("BD_CATEGORY");
+		//-----------------------------------------------------
+		List<Code> codelist = jmhDataSer.codeList(code);
+		//-----------------------------------------------------
+		for(Code c : codelist) {
+			if(c.getCate_code().equals(bd_category)) {
+				bd_category = c.getCate_name();
+			}
+		}
+		
+		BdFree bdFree = new BdFree();
+		
+		bdFree.setBd_category(bd_category);
+		bdFree.setStart(1);
+		bdFree.setEnd(3);
+		
+		mainBoardList = jmhMainSer.selectMainBdFree(bdFree);
+		
+		return mainBoardList;
+	}
+
+	@GetMapping("/main_bd_qna")
+	@ResponseBody
+	public List<BdQna> mainBdQna(HttpServletRequest request, Model model) {
+		List<BdQna> mainBoardList = null;
+		
+		BdQna bdQna = new BdQna();
+		bdQna.setStart(1);
+		bdQna.setEnd(3);
+		
+		mainBoardList = jmhMainSer.selectMainBdQna(bdQna);
+		
+		return mainBoardList;
+	}
+
+	//#######################################################################
+	//############  완료 프로젝트 목록 prj_complete_list  ############
+	//#######################################################################
+
+	
+	//프로젝트 Home
+	@RequestMapping(value = "prj_home")
+	public String prjHome(HttpServletRequest request, Model model) {
+
+		int project_status = 1; //진행중
+		
+		//-------------------------------------------------------------------
+		List<PrjInfo> prjInfoList = jmhPrjInfoSer.selectList(project_status);
+		//-------------------------------------------------------------------
+
+		model.addAttribute("prjInfoList", prjInfoList);
+		model.addAttribute("ProjectCount", prjInfoList.size());
+		
+		return "/project/prj_home";
+	}
+	
 	
 	//완료 프로젝트 목록
 	@RequestMapping(value = "prj_complete_list")
 	public String prjCompleteList(HttpServletRequest request, Model model) {
+
+		int project_status = 2; //완료
+		
+		//-------------------------------------------------------------------
+		List<PrjInfo> prjInfoList = jmhPrjInfoSer.selectList(project_status);
+		//-------------------------------------------------------------------
+		System.out.println("완료 프로젝트 개수 : " + prjInfoList.size());
+		
+		String memberNames = "";
+		for(PrjInfo prjInfo : prjInfoList) {
+			memberNames = "";
+			//-------------------------------------------------------------------------------------
+			List<PrjMemList> prjMemList = jmhPrjInfoSer.selectMemList(prjInfo.getProject_id());
+			//-------------------------------------------------------------------------------------
+			for(PrjMemList prjMem : prjMemList) {
+				if(memberNames.isEmpty()) {
+					memberNames = prjMem.getUser_name();
+				}else {
+					memberNames = memberNames + ", " + prjMem.getUser_name();
+				}
+			}
+			prjInfo.setMember_user_name(memberNames);
+		}
+
+		model.addAttribute("prjInfoList", prjInfoList);
+		model.addAttribute("ProjectCount", prjInfoList.size());
+		
 		
 		return "/project/prj_complete_list";
 	}
@@ -82,7 +189,7 @@ public class JmhController {
 		//--------------------------------------------------------------
 		List<PrjBdData> prjBdDataList = jmhDataSer.boardList(prjBdData);
 		//--------------------------------------------------------------
-
+		
 		//검색 분류코드 가져오기
 		Code code = new Code();
 		code.setTable_name("SEARCH");
@@ -374,7 +481,7 @@ public class JmhController {
 			model.addAttribute("errorMsg", "분류가져오기 실패");
 			return "error";
 		}
-	
+		
 		model.addAttribute("bd_category_codelist", bd_category_codelist); //분류
 		model.addAttribute("board", selectPrjBdData);
 		
@@ -769,6 +876,9 @@ public class JmhController {
 	public String prjBoardRepRead(PrjBdRep prjBdRep, HttpServletRequest request, Model model) {
 		System.out.println("-----프로젝트 업무보고 게시판 조회(prj_board_report_read) START-----");
 		
+		System.out.println("session.userInfo->"+request.getSession().getAttribute("userInfo"));
+		UserInfo userInfoDTO = (UserInfo) request.getSession().getAttribute("userInfo");
+
 		System.out.println("doc_no->"+prjBdRep.getDoc_no());
 		System.out.println("project_id->"+prjBdRep.getProject_id());
 
@@ -777,8 +887,13 @@ public class JmhController {
 		//---------------------------------------------------------
 		System.out.println("subject->"+selectPrjBdRep.getSubject());
 		
-		System.out.println("session.userInfo->"+request.getSession().getAttribute("userInfo"));
-		UserInfo userInfoDTO = (UserInfo) request.getSession().getAttribute("userInfo");
+		if(userInfoDTO.getUser_id().equals(selectPrjBdRep.getUser_id())) {
+			//현재 로그인 사용자가 글작성자인 경우 댓글들 alarm_flag='Y'로 일괄 변경처리
+			System.out.println("글작성자가 자신글 조회시 댓글들 alarm_flag='Y'로 일괄 변경처리");
+			//-------------------------------------------------------------------------------
+			int updateCommentAlarmCount = jmhRepSer.updateCommentAlarmFlag(selectPrjBdRep);
+			//-------------------------------------------------------------------------------
+		}
 		
 		model.addAttribute("userInfoDTO", userInfoDTO); //로그인사용자 정보
 		model.addAttribute("board", selectPrjBdRep);

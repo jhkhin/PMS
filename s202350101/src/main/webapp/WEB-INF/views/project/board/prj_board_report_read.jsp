@@ -80,7 +80,7 @@ function drawCommentList(comments){
 	}
 	else{
 		$(comments).each(function(index, comment){
-			var list = '<label class="list-group-item d-flex gap-2">';
+			var list = '<label class="list-group-item d-flex gap-2" id="comment_' + comment.comment_doc_no + '">';
 			list 	+= '<span>';
 			list 	+= '<small class="d-block text-body-secondary">작성자 : ' + comment.user_name + '</small>';
 			//작성일 표시처리 : common.js안에 formatDateTime() : 2023-11-09T01:44:25.000+00:00->2023-11-09 01:44:25
@@ -96,6 +96,15 @@ function drawCommentList(comments){
 		});
 		$("#divCommentCount").html("댓글 : " + comments.length.toString());
 		$("#divCommentCount").show();
+	}
+	
+	var params = getUrlParams(); //common.js안 정의
+	if(params.comment_doc_no != null) {
+		var comment_doc_no = params.comment_doc_no;
+		var offset = $("#comment_"+comment_doc_no).offset(); //선택한 태그의 위치를 반환
+		//animate()메서드를 이용해서 선택한 태그의 스크롤 위치를 지정해서 0.4초 동안 부드럽게 해당 위치로 이동함
+		$('html, body').animate({scrollTop : offset.top}, 400);
+		$("#comment_"+comment_doc_no).css('backgroundColor', '#fff3cd');
 	}
 }
 
@@ -134,72 +143,70 @@ $(function(){
 </head>
 <body>
 <!-- CONTENT -->
-			<!------------------------------ //개발자 소스 입력 START ------------------------------->
-			<div class="container-fluid">
-					<form action="" method="post" enctype="multipart/form-data">
-						<div style="margin-top:20px;height:34px">
-							<h3>문서 조회</h3>
-						</div>
-						<table width="100%" style="margin-top:10px">
-							<tr>
-								<td style="text-align:right">
-									<button type="button" class="btn btn-secondary btn-sm" onclick="callAction('edit','prj_board_report_edit?doc_no=${board.doc_no}&project_id=${board.project_id}')">수정</button>
-									<button type="button" class="btn btn-secondary btn-sm" onclick="callAction('delete','prj_board_report_delete?doc_no=${board.doc_no}&project_id=${board.project_id}&attach_path=${board.attach_path}')">삭제</button>
-									<button type="button" class="btn btn-secondary btn-sm" onclick="closeDoc()">닫기</button>
-								</td>
-							</tr>
-						</table>						
-						<table class="table" width="100%" style="margin-top:7px">
-							<colgroup>
-								<col width="20%"></col>
-								<col width="80%"></col>
-							</colgroup>
-							<tr>
-								<td>작성자</td>
-								<td>${board.user_name}</td>
-							</tr>
-							<tr>
-								<td>작성일</td>
-								<td><fmt:formatDate value="${board.create_date}" type="date" pattern="yyyy-MM-dd"/></td>
-							</tr>
-							<tr>
-								<td>제목</td>
-								<td>${board.subject}</td>
-							</tr>
-							<tr>
-								<td>분류</td>
-								<td>${board.bd_category_name}</td>
-							</tr>
-							<c:if test="${board.attach_path ne null}">
-								<tr>
-									<td>파일첨부</td>
-									<td><a href="javascript:popup('/upload/${board.attach_path}',800,600)">${board.attach_name}</a></td>
-								</tr>
-							</c:if>
-							<tr style="height:100px">
-								<td>본문</td>
-								<td>${board.doc_body}</td>
-							</tr>
-						</table>
-						<!-- 댓글 작성 -->
-						<table class="table">
-							<tr>
-								<td>
-									<div class="input-group" style="padding-left:inherit">
-										<span class="input-group-text">댓글</span>
-										<textarea class="form-control" aria-label="With textarea" name="comment_context" rows="3"></textarea>
-									</div>						
-								</td>
-								<td width="100" valign="bottom">
-									<button type="button" class="btn btn-secondary btn-sm" onclick="insertComment()">댓글등록</button>
-								</td>
-							</tr>
-						</table>
-						<!-- 댓글 조회 -->
-						<div id="divCommentCount" style="margin-left:16px"></div>
-						<div id="divCommentList" class="list-group p-3 px-md-3"></div>
-					</form>
-			</div>
-	  		<!------------------------------ //개발자 소스 입력 END ------------------------------->
+<!------------------------------ //개발자 소스 입력 START ------------------------------->
+	<div class="container-fluid">
+		<div style="height:34px">
+			<span class="apptitle">문서 조회</span>
+		</div>
+		<table width="100%" style="margin-top:10px">
+			<tr>
+				<td style="text-align:right">
+					<button type="button" class="btn btn-dark btn-sm" onclick="callAction('edit','prj_board_report_edit?doc_no=${board.doc_no}&project_id=${board.project_id}')">수정</button>
+					<button type="button" class="btn btn-dark btn-sm" onclick="callAction('delete','prj_board_report_delete?doc_no=${board.doc_no}&project_id=${board.project_id}&attach_path=${board.attach_path}')">삭제</button>
+					<button type="button" class="btn btn-dark btn-sm" onclick="closeDoc()">닫기</button>
+				</td>
+			</tr>
+		</table>						
+		<table class="table" width="100%" style="margin-top:7px">
+			<colgroup>
+				<col width="20%"></col>
+				<col width="80%"></col>
+			</colgroup>
+			<tr>
+				<th>작성자</th>
+				<td>${board.user_name}</td>
+			</tr>
+			<tr>
+				<th>작성일</th>
+				<td><fmt:formatDate value="${board.create_date}" type="date" pattern="yyyy-MM-dd hh:mm:ss"/></td>
+			</tr>
+			<tr>
+				<th>제목</th>
+				<td>${board.subject}</td>
+			</tr>
+			<tr>
+				<th>분류</th>
+				<td>${board.bd_category_name}</td>
+			</tr>
+			<c:if test="${board.attach_path ne null}">
+				<tr>
+					<th>파일첨부</th>
+					<td><a href="javascript:popup('/upload/${board.attach_path}',800,600)">${board.attach_name}</a></td>
+				</tr>
+			</c:if>
+			<tr style="height:100px">
+				<th>본문</th>
+				<td><pre>${board.doc_body}</pre></td>
+			</tr>
+		</table>
+		<!-- 댓글 작성 -->
+		<table class="table">
+			<tr>
+				<td>
+					<div class="input-group" style="padding-left:inherit">
+						<span class="input-group-text">댓글</span>
+						<textarea class="form-control" aria-label="With textarea" name="comment_context" rows="3"></textarea>
+					</div>						
+				</td>
+				<td width="100" valign="bottom">
+					<button type="button" class="btn btn-dark btn-sm" onclick="insertComment()">댓글등록</button>
+				</td>
+			</tr>
+		</table>
+		<!-- 댓글 조회 -->
+		<div id="divCommentCount" style="margin-left:16px"></div>
+		<div id="divCommentList" class="list-group p-3 px-md-3"></div>
+	</div>
+<!------------------------------ //개발자 소스 입력 END ------------------------------->
 </body>
 </html>

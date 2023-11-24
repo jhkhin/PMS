@@ -18,8 +18,11 @@ import com.oracle.s202350101.model.BdFreeComt;
 import com.oracle.s202350101.model.BdFreeGood;
 import com.oracle.s202350101.model.BdQna;
 import com.oracle.s202350101.model.BdQnaGood;
+import com.oracle.s202350101.model.Code;
+import com.oracle.s202350101.model.PrjBdData;
 
 import lombok.RequiredArgsConstructor;
+import oracle.net.aso.c;
 
 @Service
 @RequiredArgsConstructor
@@ -213,34 +216,44 @@ public class CyjServiceImpl implements CyjService {
 		return eventCount;
 	}
 	
-	// 이벤트_댓글리스트
+	// 이벤트_댓글입력  
 	@Override
-	public List<BdFreeComt> eventComt(int doc_no) {
-		System.out.println("CyjServiceImpl eventComt start");
-		List<BdFreeComt> comt = cd.eventComt(doc_no);
-		System.out.println("CyjServiceImpl comt-> " + comt);
-		
-		return comt;
-	}
-	
-	// 이벤트_댓글입력 
-	@Override
-	public int ajaxComt(BdFreeComt bdFreeComt) {
+	public int comtInsert(BdFreeComt bdFreeComt) {
 		System.out.println("CyjServiceImpl ajaxComt start");
-		int comtInsert = cd.ajaxComt(bdFreeComt);
+		int comtInsert = cd.comtInsert(bdFreeComt);
 		System.out.println("CyjServiceImpl comtInsert-> " + comtInsert);
 		
 		return comtInsert;
 	}
-
-	// 이벤트_입력한 댓글 갖고 오기 
+	
+	// 이벤트_댓글리스트
 	@Override
-	public List<BdFreeComt> eventSelect(BdFreeComt bdFreeComt) {
-		System.out.println("CyjServiceImpl eventSelect start");
-		List<BdFreeComt> eventSelect = cd.eventSelect(bdFreeComt);
-		System.out.println("CyjServiceImpl eventSelect-> " + eventSelect);
+	public List<BdFreeComt> eventComt(BdFreeComt bdFreeComt) {
+		System.out.println("CyjServiceImpl eventComt start");
+		List<BdFreeComt> comt = cd.eventComt(bdFreeComt);
+		System.out.println("CyjServiceImpl comt-> " + comt);
 		
-		return eventSelect;
+		return comt;
+	}	
+	
+	// 이벤트_해당 게시글에 대한 댓글 총 갯수
+	@Override
+	public int eventComtCount(int doc_no) {
+		System.out.println("CyjServiceImpl eventComtCount start");
+		int eventComtCount = cd.eventComtCount(doc_no);
+		System.out.println("CyjServiceImpl eventComtCount-> " + eventComtCount);
+		
+		return eventComtCount;
+	}
+	
+	// 현재 로그인 사용자가 글작성자인 경우 댓글들 alarm_flag='Y'로 일괄 변경처리
+	@Override
+	public int cyUpdateCommentAlarmFlag(BdFree eventContent) {
+		System.out.println("CyjServiceImpl cyUpdateCommentAlarmFlag start");
+		int cyUpdateCommentAlarmFlag = cd.cyUpdateCommentAlarmFlag(eventContent);
+		System.out.println("CyjServiceImpl cyUpdateCommentAlarmFlag-> " + cyUpdateCommentAlarmFlag);
+		
+		return cyUpdateCommentAlarmFlag;
 	}
 	
 // ------------------------------------------------------------------------	
@@ -336,32 +349,12 @@ public class CyjServiceImpl implements CyjService {
 
 	// 자유_댓글리스트
 	@Override
-	public List<BdFree> freeComtList(int doc_no) {
+	public List<BdFreeComt> freeComtList(int doc_no) {
 		System.out.println("CyjServiceImpl freeComtList start");
-		List<BdFree> freeComtList = cd.freeComtList(doc_no);
+		List<BdFreeComt> freeComtList = cd.freeComtList(doc_no);
 		System.out.println("CyjServiceImpl freeComtList-> " + freeComtList);
 		
 		return freeComtList;
-	}
-
-	// 자유_댓글 입력
-	@Override
-	public int ajaxFreeComt(BdFreeComt bdFreeComt) {
-		System.out.println("CyjServiceImpl ajaxfreeComt start");
-		int ajaxFree = cd.ajaxFreeComt(bdFreeComt);
-		System.out.println("CyjServiceImpl ajaxFree-> " + ajaxFree);
-		
-		return ajaxFree;
-	}
-
-	// 자유_입력한 댓글 갖고 옴
-	@Override
-	public List<BdFreeComt> freeComtList(BdFreeComt bdFreeComt) {
-		System.out.println("CyjServiceImpl freeComtList start");
-		List<BdFreeComt> freeSelect = cd.freeSelect(bdFreeComt);
-		System.out.println("CyjServiceImpl freeSelect-> " + freeSelect);
-		
-		return freeSelect;
 	}
 	
 // ------------------------------------------------------------------------	
@@ -390,7 +383,7 @@ public class CyjServiceImpl implements CyjService {
 
 // ------------------------------------------------------------------------		
 
-	// 자유_삭제
+	// 자유_게시글 삭제
 	@Override
 	public int freeDelete(int doc_no) {
 		System.out.println("CyjServiceImpl freeDelete start");
@@ -399,20 +392,57 @@ public class CyjServiceImpl implements CyjService {
 		
 		return delete;
 	}
+	
+// ------------------------------------------------------------------------		
+	
+	// 자유_댓글 삭제
+	@Override
+	public int freeComtDelete(BdFreeComt bdFreeComt) {
+		System.out.println("CyjServiceImpl freeComtDelete start");
+		int comtDelete = cd.freeComtDelete(bdFreeComt);
+		System.out.println("CyjServiceImpl comtDelete-> " + comtDelete);
+		
+		return comtDelete;
+	}
 
 // ------------------------------------------------------------------------	
 // ------------------------- qna 게시판 ------------------------------------
 
-	// qna_총 갯수
-	@Override
-	public int qnaTotalCount() {
+	// qna_count (전체 or 분류검색) 
+	@Override 
+	public int qnaSelectCount(BdQna bdQna) {
 		System.out.println("CyjServiceImpl qnaTotalCount start");
-		int qnaTotalCount = cd.qnaTotalCount();
-		System.out.println("CyjServiceImpl qnaTotalCount-> " + qnaTotalCount);
 		
-		return qnaTotalCount;
+		int totalCnt = 0;
+		
+		if(bdQna.getDoc_group_list() != null) {
+			System.out.println("★doc_group---->"+bdQna.getDoc_group());
+			System.out.println("★doc_group_list---->"+bdQna.getDoc_group_list());
+			if(bdQna.getDoc_group_list().toUpperCase().equals("Y")) {
+				// 알림에서 원글+답글 목록 열때
+				// prj_board_data 조건에 해당하는 Count
+				//------------------------------------------
+				totalCnt = cd.alarmCount(bdQna);
+				//------------------------------------------
+				System.out.println("JmhServiceImpl totalCount totalCnt->" + totalCnt);
+				System.out.println("JmhServiceImpl totalCount END...");
+				return totalCnt;
+			} 
+		}
+		if(bdQna.getKeyword() != null) {
+			if(!bdQna.getKeyword().equals("")) {
+				System.out.println("★검색 SearchKeyword---->" + bdQna.getKeyword()); 
+				totalCnt = cd.searchCount(bdQna);  // 검색 건수 가져오기 
+				System.out.println("CyjServiceImpl qnaSelectCount totalCnt->" + totalCnt);
+				return totalCnt;
+			}
+		}
+		totalCnt = cd.qnaSelectCount(bdQna);   // 전체 검색 건수
+		System.out.println("CyjServiceImpl qnaSelectCount totalCnt-> " + totalCnt);
+		
+		return totalCnt; 
 	}
-
+	
 	// qna_추천수 가장 높은 row 3개
 	@Override
 	public List<BdQna> qnaRow() {
@@ -427,24 +457,41 @@ public class CyjServiceImpl implements CyjService {
 	@Override
 	public List<BdQna> qnaList(BdQna bdQna) {
 		System.out.println("CyjServiceImpl qnaList start");
-		List<BdQna> qnaTotalList = cd.qnaTotalList(bdQna);
-		System.out.println("CyjServiceImpl qnaTotalList-> " + qnaTotalList);
 		
-		return qnaTotalList;
+		List<BdQna> qnaSelectList = null;
+		
+		if(bdQna.getDoc_group_list() != null) {
+			if(bdQna.getDoc_group_list().toUpperCase().equals("Y")) {
+				// 알림에서 원글+답글 목록 열때
+				// prj_board_data 조건에 해당하는 Count
+				qnaSelectList = cd.alarmList(bdQna);
+				System.out.println("CyjServiceImpl boardList > alarmList END...");
+				return qnaSelectList;
+			}
+		}
+		if(bdQna.getKeyword() != null) {
+			if(!bdQna.getKeyword().equals("")) {
+				System.out.println("★검색 keyword----> " + bdQna.getKeyword());
+				qnaSelectList = cd.searchList(bdQna); // 분류별 검색 리스트
+				return qnaSelectList;
+			}
+		}
+		// 전체 리스트 
+		qnaSelectList = cd.qnaTotalList(bdQna);
+		System.out.println("CyjServiceImpl qnaSelectList-> " + qnaSelectList);
+		return qnaSelectList;
 	}
 
-// ------------------------------------------------------------------------	
-
-	// qna_새 글 입력 
+	// qna_검색 분류 코드 가져오기
 	@Override
-	public int qnaInsert(@Valid BdQna bdQna) {
-		System.out.println("CyjServiceImpl qnaInsert start");
-		int qnaInsert = cd.qnaInsert(bdQna);
-		System.out.println("CyjServiceImpl qnaInsert-> " + qnaInsert);
+	public List<Code> codeList(Code code) {
+		System.out.println("CyjServiceImpl codeList start");
+		List<Code> codeList = cd.codeList(code);
+		System.out.println("CyjServiceImpl codeList-> " + codeList);
 		
-		return qnaInsert;
+		return codeList;
 	}
-
+	
 // ------------------------------------------------------------------------	
 
 	// qna_상세
@@ -467,6 +514,17 @@ public class CyjServiceImpl implements CyjService {
 		return qnaCount;
 	}
 
+	// 현재 로그인 사용자가 답글의 부모글 작성자인 경우 답글 조회시 alarm_flag='Y'로 변경처리
+	@Override
+	public int cyUpdateReplyAlarmFlag(BdQna qnaContent) {
+		System.out.println("CyjServiceImpl cyUpdateReplyAlarmFlag start");
+		int resultCount = 0;	
+		resultCount = cd.cyUpdateReplyAlarmFlag(qnaContent);
+		System.out.println("CyjServiceImpl cyUpdateReplyAlarmFlag resultCount-> " + resultCount);
+		System.out.println("CyjServiceImpl cyUpdateReplyAlarmFlag END...");
+	
+		return resultCount;
+	}
 // ------------------------------------------------------------------------	
 
 	// qna_수정
@@ -520,8 +578,66 @@ public class CyjServiceImpl implements CyjService {
 		
 		return qnaGoodSelect;
 	}
+
+// ------------------------------------------------------------------------	
+
+	// qna_새 글 입력하기 위한 상세 
+	@Override
+	public BdQna selectBdQna(BdQna bdQna) {
+		System.out.println("CyjServiceImpl selectBdQna start");
+		BdQna selectBdQna = cd.selectBdQna(bdQna);
+		System.out.println("CyjServiceImpl selectBdQna-> " + selectBdQna);
+		
+		return selectBdQna;
+	}
 	
+	// qna_새 글 입력 
+	@Override
+	public int qnaInsert(BdQna bdQna) {
+		System.out.println("CyjServiceImpl qnaInsert start");
+		int qnaInsert = cd.qnaInsert(bdQna);
+		System.out.println("CyjServiceImpl qnaInsert-> " + qnaInsert);
+		
+		return qnaInsert;
+	}
+
+// ------------------------------------------------------------------------	
+
+	// qna_답변 순서 조절 
+	@Override
+	public int qnaReply(BdQna bdQna) {
+		System.out.println("CyjServiceImpl qnaReply start");
+		int qnaReply = cd.qnaReply(bdQna);
+		System.out.println("CyjServiceImpl qnaReply-> " + qnaReply);
+		
+		return qnaReply;
+	}
+
+// ------------------------------------------------------------------------	
+
+	// qna_삭제
+	@Override
+	public int qnaDelete(int doc_no) {
+		System.out.println("CyjServiceImpl qnaDelete start");
+		int qnaDelete = cd.qnaDelete(doc_no);
+		System.out.println("CyjServiceImpl qnaDelete-> " + qnaDelete);
+		
+		return qnaDelete;
+	}
+
+
+
+
+
+
+
+
+
 	
+
+
+
+
 	
 	
 	

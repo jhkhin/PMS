@@ -1,12 +1,13 @@
 package com.oracle.s202350101.model;
 
-import java.util.Date;
+import java.sql.Date;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-//@Date 
+// @Data 
 @Getter
 @Setter
 @ToString
@@ -22,4 +23,13 @@ public class BdFreeComt {
 	// 조회용
 	private String  user_name;
 	private String  app_name;
+	
+	// 페이징 작업 
+	private int rn;
+	private String search;   	
+	private String keyword;
+	private String pageNum;		
+	private int total;
+	private int start; 		 	
+	private int end;
 }
