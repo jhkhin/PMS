@@ -463,10 +463,13 @@ public class HijController {
 		
 		//HijSearchRequestDto hijSearchRequestDto = new HijSearchRequestDto();
 		//hijSearchRequestDto.setKeyword(keyword);
-		System.out.println("keyword : " + hijSearchRequestDto.getKeyword());
+		System.out.println("****keyword : " + hijSearchRequestDto.getKeyword());
+		System.out.println("****project_id : " + hijSearchRequestDto.getProject_id());
 		
 		// 검색한 결과를 hijSearchResponseDto List로 넣어줌
+		//----------------------------------------------------------------------------------
 		List<HijSearchResponseDto> hijSearchResponseDto = hs.searchAll(hijSearchRequestDto);
+		//----------------------------------------------------------------------------------
 		System.out.println("검색 결과 수 : " +hijSearchResponseDto.size() );
 		System.out.println("HijController searchAll END");
 		return hijSearchResponseDto;

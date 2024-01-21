@@ -9,109 +9,93 @@
 
 <!--CSS START -->
 <style type="text/css">
-	#category_title {
-		position: absolute;
-	}
-
-	div #calendar {
-		width: 80%;
-		margin-top: 50px;
-		padding-left: 15px;
-	}
-	
-	#center {
-		display: flex;
-	}
-	
+  	div .calendar {
+		width: 85%;
+	} 
 	#meetingList {
 		padding: 50px 30px 30px 30px;
 	}
-	
 	#meeting {
 		width: 100%;
 		padding: 20px;
 		text-align: left;
 		padding-top: 20px;
 	}
-	
 	table tr {
 		height: 50px;
 	}
-	
 	#title {
-		width: 80%;
+		width: 100%;
 		text-align: center;
 	}
-	
 	.list_date {
 		padding-top: 15px;
 		font-size: 11pt;
 		border-bottom: solid gray 1px;
 	}
-	
 	.list_title {
 		font-size: 13pt;
 	}
-	
 	.list_title a {
 		text-decoration: none;
 		color: black;
 	}
-	
 	.radio {
 		margin-left: 30px;
 	}
-	
 	select {
 		width: 100%;
 	}
-	
 	textarea {
 		width: 100%;
 	}
-	
 	input.form-control.form-control-sm.uploadFile {
     	width: 80%;
 	}
-	
 	#mtPage {
 		display: flex;
     	justify-content: center;
 	}
-	
-	:root {
-		/* --fc-button-text-color: black;
-		--fc-button-bg-color: white;
-		--fc-button-hover-bg-color: rgba(13, 110, 253, 0.1);
-		--fc-button-active-bg-color: white; */
-	}
-
-	.fc .fc-daygrid-day-frame {
-	    position: relative;
-	    height: 100px;
-	}
-	
 	.fc .fc-col-header-cell-cushion {
 	    text-decoration: none;
 	    color: black;
 	}
-	
 	.fc .fc-daygrid-day-number {
 	    text-decoration: none;
 	    color: black;
 	}
-	.fc-day {
+ 	.fc-day {
 		height: 20px;
 	}
-	
     tr[role="row"] {
 		height: 20px;
     }
-    
     .fc .fc-daygrid-day-top {
     	display: flex;
     	flex-direction: row;
     }
+    .fc-event-title {
+    	cursor:pointer;
+    }
+    .fc-event-title-container{
+    	cursor:pointer;
+    }
+    .fc-daygrid-block-event .fc-event-time, .fc-daygrid-block-event .fc-event-title {
+	    padding: 1px;
+	    font-size: 9pt;
+	} 
+	.frame_set {
+		display: flex;
+		flex: 1;
+	}
+	.frame_cal {
+		display: block;
+		width: 80%;
+	}
+	.frame_side {
+		display: block;
+		width: 30%;
+	}
 </style>
 
 
@@ -221,7 +205,8 @@
 				title : '${meeting.meeting_title}',
 				start : '${meeting.meeting_date}',
 				end : '${meeting.meeting_date}',
-				color : '#F2CB61',
+				color : '#FFE08C',
+				textColor : '#000000',
 				id : '${meeting.meeting_id}'
 			});
 		</c:forEach>
@@ -233,7 +218,8 @@
 				title : '${meeting.meeting_title}',
 				start : '${meeting.meeting_date}',
 				end : '${meeting.meeting_date}',
-				color : '#B5B2FF',
+				color : '#D1B2FF',
+				textColor : '#000000',
 				id : '${meeting.meeting_id}'
 			});
 		</c:forEach>
@@ -286,8 +272,23 @@
 				                // jQuery로 스타일 조작
 				                if (meetingList_body.css('display') == 'none') {
 				                	meetingList_body.show();
+				                	
+				            		$('#idFrameSet').addClass("frame_set");
+				            		$('#idFrameCal').addClass("frame_cal");
+				            		$('#right_side').addClass("frame_side");
+				            		$('#calendar').removeClass("calendar");
+				            		
+				            		calendar.updateSize();
+				                	
 				                } else {
 				                	meetingList_body.hide();
+				                	
+				            		$('#idFrameSet').removeClass("frame_set");
+				            		$('#idFrameCal').removeClass("frame_cal");
+				            		$('#right_side').removeClass("frame_side");
+				            		$('#calendar').addClass("calendar");
+				            		
+				            		calendar.updateSize();
 				                }
 
 				                $.each(jsondata.firList, function(index, MTList) {
@@ -336,7 +337,7 @@
 				console.log("클릭한 곳의 id: " + eventId);
 			    
 				// 보라색 회의일정 클릭 시 해당 회의록 페이지로 이동
-				if (backgroundColor == "rgb(181, 178, 255)") {
+				if (backgroundColor == "rgb(209, 178, 255)") {
 					var project_id = ${project_id};
 					var openurl = "/prj_meeting_report_read?meeting_id=" + eventId + "&project_id=" + project_id;
 					
@@ -345,7 +346,7 @@
 				};
 				
 				// 노란색 회의일정 클릭 시 회의록 등록 모달창 표출
-			    if (backgroundColor == "rgb(242, 203, 97)") {
+			    if (backgroundColor == "rgb(255, 224, 140)") {
 			    	
 			    	var project_id = ${project_id};
 			    	var sendurl = "/prj_meeting_date_select/?meeting_id=" + eventId + "&project_id=" + project_id;
@@ -447,7 +448,7 @@
 							var inputstr = '';
 							
 			    			if (attach_name != null) {
-			    				filestr += 	'<a href="/' + attach_path + '/' + attach_name + '" target="_blank">' + attach_name +
+			    				filestr += 	'<a href="/upload/' + attach_path + '" target="_blank">' + attach_name +
 			    							'</a>&nbsp;&nbsp;<img src="/common/images/btn_icon_delete2.png" onclick="deleteFlagAttach()" style="cursor:pointer">';
 			    				filestr +=	'<input type="hidden" name="attach_name" id="attach_name" value="' + attach_name + '">';
 			    				filestr +=	'<input type="hidden" name="attach_path" id="attach_path" value="' + attach_path + '">';
@@ -672,7 +673,7 @@
 					        </a>
 					      </li>
 					      <li class="breadcrumb-item">
-					        <a class="link-body-emphasis fw-semibold text-decoration-none" href="/dashboard">프로젝트</a>
+					        <a class="link-body-emphasis fw-semibold text-decoration-none" href="prj_home">프로젝트</a>
 					      </li>
 					      <li class="breadcrumb-item active" aria-current="page">회의록</li>
 					    </ol>
@@ -680,7 +681,10 @@
 				</div>
 				
 				<!-- fullcalendar 추가 -->
-				<div id='calendar'></div>
+			<div id="idFrameSet">
+				<div id="idFrameCal">
+					<div id='calendar' class="calendar"></div>
+				</div>
 
 				<!-- 회의일정 등록 modal 추가 -->
 				<div class="modal fade" id="calendarModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -710,7 +714,7 @@
 										</c:forEach>
 										
 										<label for="taskId" class="col-form-label">회의 유형</label><br>
-										<select id="meeting_category" name="meeting_category">
+										<select id="meeting_category" name="meeting_category" class="form-select">
 											<option value="킥오프미팅">킥오프미팅</option>
 											<option value="주간 업무보고">주간 업무보고</option>
 											<option value="월간 회의">월간 회의</option>
@@ -722,7 +726,7 @@
 										<input type="file" class="form-control" name="file1">
 
 										<label for="taskId" class="col-form-label">회의 내용</label> 
-										<textarea rows="5" cols="60" id="meeting_content" name="meeting_content"></textarea>
+										<textarea rows="5" cols="60" id="meeting_content" name="meeting_content" class="form-control"></textarea>
 									</div>
 								</div>
 								<div class="modal-footer">
@@ -761,7 +765,7 @@
 										</div>
 										
 										<label for="taskId" class="col-form-label">회의 유형</label><br>
-										<select id="md_category" name="meeting_category">
+										<select id="md_category" name="meeting_category" class="form-select">
 
 										</select><br>
 										
@@ -773,7 +777,7 @@
 										</div>
 										
 										<label for="taskId" class="col-form-label">회의 내용</label> 
-										<textarea rows="5" cols="60" id="md_content" name="meeting_content"></textarea>
+										<textarea rows="5" cols="60" id="md_content" name="meeting_content" class="form-control"></textarea>
 									</div>
 								</div>
 								<div class="modal-footer">
@@ -787,7 +791,7 @@
 					</div>
 				</div>
 
-				<div id="right_side" style="width: 30%">
+				<div id="right_side"> <!-- style="width: 30%" -->
 					<div>
 						<div id="meetingList" style="display:none;">
 							<h3 id="title">회의록</h3>
@@ -800,6 +804,7 @@
 						</div>
 					</div>
 				</div>
+			</div>
 				<!------------------------------ //개발자 소스 입력 END ------------------------------->
 			</main>
 

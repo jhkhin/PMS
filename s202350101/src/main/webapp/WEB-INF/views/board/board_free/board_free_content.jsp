@@ -42,12 +42,11 @@
 	// 게시글 삭제
 	function freeDelete(doc_no, user_id) {
 //		alert("free 게시글 삭제 !!");
-		var inputUserId = prompt('회원 아이디를 입력하세요');
-		if (inputUserId != user_id) {
-			alert('회원ID가 올바르지 않습니다');
-			return;
-		}
-		
+//		var inputUserId = prompt('회원 아이디를 입력하세요');
+//		if (inputUserId != user_id) {
+//			alert('회원ID가 올바르지 않습니다');
+//			return;
+//		}	
 		// 아이디 같으므로 삭제
 		$.ajax({
 			url      : 'freeDelete'
@@ -67,16 +66,18 @@
 	}
 	
 	// 댓글 삭제
-	function freeComtDelete(doc_no, comment_doc_no, user_id){
-		alert('free 댓글 삭제 doc_no: ' + doc_no);
-		alert('free 댓글 삭제 user_id: ' + user_id);
-		
-		var inputUserId = prompt('회원 아이디를 입력하세요');
-		if (inputUserId != user_id) {
-			alert("회원ID가 올바르지 않습니다");
+	function freeComtDelete(doc_no, comment_doc_no, writer_id, current_id){
+//		alert('free 댓글 삭제 doc_no: ' + doc_no);
+//		alert('free 댓글 삭제 user_id: ' + user_id);
+//		var inputUserId = prompt('회원 아이디를 입력하세요');
+//		if (inputUserId != user_id) {
+//			alert("회원ID가 올바르지 않습니다");
+//			return;
+//		}
+		if (current_id != writer_id) {
+			alert("작성자만 삭제 할 수 있습니다.");
 			return;
 		}
-		
 		$.ajax({
 			url 		: 'free_comt_delete',
 			type 		: 'POST',
@@ -173,7 +174,7 @@
 				<tr> <th>본문</th>        <td><pre>${freeContent.doc_body}</pre></td> </tr>
 				<tr> <th>조회수</th>       <td>${freeContent.bd_count}</td> </tr>
 				<tr> <th>추천</th>        <td id="count_btn">${freeContent.good_count}</td> </tr>
-				<tr> <th>첨부파일</th>     <td>${freeContent.attach_name}<img alt="" src="${pageContext.request.contextPath}/${freeContent.attach_path}/${freeContent.attach_name}"></td> </tr>	
+				<tr> <th>첨부파일</th>     <td><a href="javascript:popup('/upload/${freeContent.attach_path}',800,600)">${freeContent.attach_name}</a></td> </tr>	
 			</table>
 			
 			<!-- 댓글 등록 -->
@@ -207,7 +208,7 @@
 						<td>${comt.user_name}</td>
 						<td>${comt.create_date}</td>
 						<td>${comt.comment_context}</td>
-						<td><input type="button" value="댓글 삭제" onclick="freeComtDelete(${comt.doc_no}, ${comt.comment_doc_no}, '${comt.user_id}' )"></td>
+						<td><input type="button" value="댓글 삭제" onclick="freeComtDelete(${comt.doc_no}, ${comt.comment_doc_no}, '${comt.user_id}','${userInfo.user_id}' )"></td>
 					</tr>
 				</c:forEach>
 				</tbody>

@@ -41,16 +41,12 @@
 	// 삭제 
 	function ajaxDelete(doc_no, user_id) {
 /* 		alert("글 번호 : " + doc_no);
-		alert("회원ID : " + user_id);  */
-	
- 		var inputUserId = prompt('회원 아이디를 입력하세요');
-		if (inputUserId != user_id) {
-			alert("회원ID가 올바르지 않습니다");
-			return;
-		}
-		
-		
-		
+		alert("회원ID : " + user_id);  */	
+//		var inputUserId = prompt('회원 아이디를 입력하세요');
+//		if (inputUserId != user_id) {
+//			alert("회원ID가 올바르지 않습니다");
+//			return;
+//		}
 		// 아이디 같으므로 삭제 
 		$.ajax({
 			 url      : 'delete'
@@ -147,7 +143,7 @@
 				<tr> <th>본문</th>         <td><pre>${content.doc_body}</pre></td> </tr>
 				<tr> <th>조회수</th>        <td>${content.bd_count}</td> </tr>
 				<tr> <th>추천</th>         <td id="count_btn">${content.good_count}</td> </tr>
-				<tr> <th>첨부파일</th>      <td>${content.attach_name}<img alt="" src="${pageContext.request.contextPath}/${content.attach_path}/${content.attach_name}"></td> </tr>	
+				<tr> <th>첨부파일</th>     <td><a href="javascript:popup('/upload/${content.attach_path}',800,600)">${content.attach_name}</a></td> </tr>	
 			</table>
 			
 			

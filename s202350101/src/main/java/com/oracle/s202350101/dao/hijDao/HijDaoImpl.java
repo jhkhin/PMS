@@ -268,6 +268,21 @@ public class HijDaoImpl implements HijDao {
 		}
 		return prjInfo;
 	}
+//--------------------------------------------------------------------------------------		
+	// 알람
+	@Override
+	public int updateAlarmCount(PrjInfo prjInfo) {
+		int resultCount = 0;
+		System.out.println("HijDaoImpl updateAlarmCount START");
+		try {
+			//-------------------------------------------------------
+			resultCount = session.update("ijUpdateAlarm", prjInfo);
+			//-------------------------------------------------------
+		} catch (Exception e) {
+			System.out.println("HijDaoImpl searchAll Exception e : " + e.getMessage());
+		}
+		return resultCount;
+	}
 //--------------------------------------------------------------------------------------	
 	// 프로젝트 단계조회
 	@Override
@@ -436,22 +451,6 @@ public class HijDaoImpl implements HijDao {
 			System.out.println("HijDaoImpl searchAll Exception e : " + e.getMessage());
 		}
 		return hijSearchResponseDtoList;
-	}
-	
-//--------------------------------------------------------------------------------------		
-	// 알람
-	@Override
-	public int updateAlarmCount(PrjInfo prjInfo) {
-		int resultCount = 0;
-		System.out.println("HijDaoImpl updateAlarmCount START");
-		try {
-			//-------------------------------------------------------
-			resultCount = session.update("ijUpdateAlarm", prjInfo);
-			//-------------------------------------------------------
-		} catch (Exception e) {
-			System.out.println("HijDaoImpl searchAll Exception e : " + e.getMessage());
-		}
-		return resultCount;
 	}
 
 }

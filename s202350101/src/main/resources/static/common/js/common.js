@@ -21,6 +21,28 @@ function goto(url) {
 	location.href = url;
 }
 
+function gotoCheckProjectID(url, s_project_id) {
+	if(typeof s_project_id == "undefined") {
+		location.href = url;
+	}else{
+		location.href = url+"?s_project_id="+s_project_id;
+	}
+}
+
+function loadCalendar() {
+	var calendarEl = document.getElementById('calendar');
+	 	
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+       initialView : 'dayGridMonth'
+    });
+    
+    calendar.render();
+
+	$(".fc-scrollgrid-sync-table").css("width", $(".fc-col-header").css("width"));
+    $(".fc-scrollgrid-sync-table").css("height","290px");
+}
+
+
 //문서 버튼 >> 닫기
 function closeDoc() {
 	if(opener) {

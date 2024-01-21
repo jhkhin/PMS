@@ -92,7 +92,7 @@
 			        </a>
 			      </li>
 			      <li class="breadcrumb-item">
-			        <a class="link-body-emphasis fw-semibold text-decoration-none" href="dashboard">프로젝트</a>
+			        <a class="link-body-emphasis fw-semibold text-decoration-none" href="prj_home">프로젝트</a>
 			      </li>
 			      <li class="breadcrumb-item active" aria-current="page">업무보고</li>
 			    </ol>
@@ -156,10 +156,10 @@
 						<table class="table table-hover">
 							<colgroup>
 								<col width="5%"></col>
-								<col width="50%"></col>
+								<col width="45%"></col>
 								<col width="10%"></col>
-								<col width="12%"></col>
-								<col width="8%"></col>
+								<col width="15%"></col>
+								<col width="10%"></col>
 								<col width="15%"></col>
 							</colgroup>
 							<thead class="table-light">
@@ -211,7 +211,7 @@
 						  <ul class="pagination justify-content-center">
 						    
 							<c:if test="${page.startPage > page.pageBlock}">
-							   	<li class="page-item disabled"><a class="page-link" href="javascript:gotoPage('${page.startPage-page.pageBlock}')" tabindex="-1" aria-disabled="true">Previous</a></li>
+							   	<li class="page-item"><a class="page-link" href="javascript:gotoPage('${page.startPage-page.pageBlock}')" tabindex="-1" aria-disabled="true">Previous</a></li>
 							</c:if>
 						    <c:forEach var="i" begin="${page.startPage}" end="${page.endPage}">
 								<c:choose>

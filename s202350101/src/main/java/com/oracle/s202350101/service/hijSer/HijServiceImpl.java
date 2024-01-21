@@ -432,11 +432,17 @@ public class HijServiceImpl implements HijService {
 		List<String> tableList = new ArrayList<String>();
 		tableList.add("BD_FREE");
 		tableList.add("BD_QNA");
+		tableList.add("PRJ_BD_DATA");
+		tableList.add("PRJ_BD_REP");
+		tableList.add("TASK");
 		
 		// table 하나씩 검색
 		for(String table : tableList) {
 			hijSearchRequestDto.setTablename(table);
+			
+			//-----------------------------------------------------------
 			hijSearchResponseDtoList = hd.searchAll(hijSearchRequestDto);
+			//-----------------------------------------------------------
 			hijSearchResponsMerge.addAll(hijSearchResponseDtoList);
 		}
 		

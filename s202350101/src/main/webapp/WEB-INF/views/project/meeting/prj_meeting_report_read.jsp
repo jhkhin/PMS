@@ -36,6 +36,9 @@
 		height: 100px;
 		padding-right: 20px;
 	}
+	pre {
+	     margin-top: 16px;
+	}
 </style>
 <!-- CSS END -->
 
@@ -166,7 +169,7 @@
 						</tr>
 						<tr>
 							<th>첨부파일</th>
-							<td><c:if test="${meeting.attach_name != null}"><a href="javascript:popup('${pageContext.request.contextPath}/${meeting.attach_path }/${meeting.attach_name}',800,600)">${meeting.attach_name}</a></c:if></td>
+							<td><c:if test="${meeting.attach_name != null}"><a href="javascript:popup('${pageContext.request.contextPath}/upload/${meeting.attach_path}',800,600)">${meeting.attach_name}</a></c:if></td>
 						</tr>
 						<tr>
 							<th>회의내용</th><td><pre>${meeting.meeting_content}</pre></td>
@@ -174,9 +177,9 @@
 					</c:forEach>
 					<tr>
 						<td colspan="2" class="button">
-						<input type="button" value="목록" onclick="location.href='/prj_meeting_calendar?project_id=${project_id}'">
-						<input type="button" value="수정" onclick="location.href='/prj_meeting_report_update?meeting_id=${meeting_id}&project_id=${project_id}'">
-						<input type="button" value="삭제" id="deleteChk" onclick="delchk()">
+						<input type="button" class="btn btn-dark btn-sm" value="목록" onclick="location.href='/prj_meeting_calendar?project_id=${project_id}'">
+						<input type="button" class="btn btn-dark btn-sm" value="수정" onclick="location.href='/prj_meeting_report_update?meeting_id=${meeting_id}&project_id=${project_id}'">
+						<input type="button" class="btn btn-dark btn-sm" value="삭제" id="deleteChk" onclick="delchk()">
 						</td>
 					</tr>
 				</table>
