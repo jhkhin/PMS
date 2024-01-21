@@ -40,12 +40,12 @@
 ## 나의 구현 기능
 
  ### 프로젝트 생성<p>
-  <img src="png/project_create.png" width="80%"><p>
+  <img src="png/proejct_create.png" width="80%">
   <img src="png/create_page.png" width="80%"> 
   
  ### 프로젝트 단계 프로파일<p>
   <img src="png/step_proecess.png" width="80%">
-  <img src="png/step_proecess2.png" width="80%">
+  <img src="png/step_proecess_2.png" width="80%">
   <img src="png/update.png" width="80%">
   <img src="png/add.png" width="80%">
   <img src="png/portfolio.png" width="80%">
