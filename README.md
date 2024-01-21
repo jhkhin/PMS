@@ -40,20 +40,31 @@
 ## 나의 구현 기능
 
  ### 프로젝트 생성<p>
+  - 프로젝트 팀장의 반 학생들을 목록화하여 선택할 수 있습니다.
   <img src="png/proejct_create.png" width="80%">
   <img src="png/create_page.png" width="80%"> 
   
  ### 프로젝트 단계 프로파일<p>
   <img src="png/step_proecess.png" width="80%">
   <img src="png/step_proecess_2.png" width="80%">
-  <img src="png/update.png" width="80%">
+  <img src="png/update.png" width="80%"> <p>
+   - 프로젝트 승인시 단계가 자동으로 생성되며 추가 및 삭제 가능하고 프로젝트 단계를 설정 할 수 있습니다.
   <img src="png/add.png" width="80%">
   <img src="png/portfolio.png" width="80%">
   
  ### 프로젝트 승인<p>
+  - 프로젝트 승인 시 멤버, 프로젝트 번호를 순차적으로 동시에 진행하며 프로세스 단계를 생성하게 됩니다.
+  - 프로젝트 삭제 시 프로젝트 번호, 멤버를 순차적으로 동시에 진행하여 프로세스를 삭제하게 됩니다. <p>
   <img src="png/admin.png" width="80%">
   <img src="png/admin_page.png" width="80%">
   
  ### 통합검색<p>
   <img src="png/search.png" width="80%">
   <img src="png/search_page.png" width="80%">
+  <br>
+  
+## 프로젝트 소감
+학원에서 배운 내용을 어떻게 실제상황에서 접할지 막막했었습니다.
+이번 프로젝트의 가장 어려웠던 점은 어떤 프로세스를 토대로 프로그램을 만들어야 될지 많이 고민 했었습니다.
+또한 여러 작업을 동시다발적으로 한번에 진행해야되서 서로 고민이 많았던것 같습니다.
+팀장의 역할을 맡아 어깨가 무거웠지만 팀원들의 도움으로 서로 의견을 내고 도와주면서 잘 마무리 지었고 개발자로서 한걸음 다가갈수 있는 기회가 되었습니다.
